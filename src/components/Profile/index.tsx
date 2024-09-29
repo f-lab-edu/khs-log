@@ -1,6 +1,10 @@
 import Image from '@/components/Image'
 
-const Profile = () => (
+interface Props {
+  position?: 'left' | 'right'
+}
+
+const Profile = ({position = 'left'}: Props) => (
   <div className="mb-6">
     <div className="flex items-center justify-center">
       <div className="relative w-10 h-10">
@@ -12,7 +16,9 @@ const Profile = () => (
         />
         <div className="absolute -right-0.75 -bottom-0.75 w-4.5 h-4.5 bg-primary-2 rounded-full border-4 border-n-6" />
       </div>
-      <div className="text-n-3 font-extrabold text-base">khs-log</div>
+      {position === 'left' ? (
+        <div className="text-n-3 font-extrabold text-base">khs-log</div>
+      ) : null}
     </div>
   </div>
 )
