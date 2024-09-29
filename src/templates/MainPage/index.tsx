@@ -1,9 +1,15 @@
 'use client'
 
-import LeftSidebar from '@/components/LeftSidebar'
+import React from 'react'
+
+import LeftSideBar from '@/components/LeftSideBar'
 
 const MainPage = () => {
-  return <LeftSidebar />
+  return (
+    <>
+      <LeftSideBar />
+    </>
+  )
 }
 
 export default MainPage
