@@ -1,5 +1,5 @@
-import Navigation from '@/components/LeftSideBar/Navigation'
-import Profile from '@/components/LeftSideBar/Profile'
+import Navigation from '@/components/LeftSidebar/Navigation'
+import Profile from '@/components/LeftSidebar/Profile'
 import MainTitle from '@/components/MainTitle'
 
 const LeftSideBar = () => {

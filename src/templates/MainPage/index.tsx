@@ -2,7 +2,7 @@
 
 import React from 'react'
 
-import LeftSideBar from '@/components/LeftSideBar'
+import LeftSideBar from '@/components/LeftSidebar'
 
 const MainPage = () => {
   return (
