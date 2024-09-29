@@ -13,41 +13,37 @@ const MOCK_DATA = [
     image: '/images/smileHeart.png',
   },
   {
-    username: 'khs',
-    content:
-      'content content content content content content content content content content',
+    username: 'kwon',
+    content: 'kwon kwon kwon kwon kwon kwon kwon kwon kwon',
     time: new Date().toDateString(),
     url: '/Blog',
     image: '/images/smileHeart.png',
   },
   {
-    username: 'khs',
-    content:
-      'content content content content content content content content content content',
+    username: 'han',
+    content: 'han han han han han',
     time: new Date().toDateString(),
     url: '/Blog',
     image: '/images/smileHeart.png',
   },
   {
-    username: 'khs',
-    content:
-      'content content content content content content content content content content',
+    username: 'sung',
+    content: 'sung sung sung sung sung sung sung',
     time: new Date().toDateString(),
     url: '/Blog',
     image: '/images/smileHeart.png',
   },
   {
-    username: 'khs',
+    username: 'ivory-code',
     content:
-      'content content content content content content content content content content',
+      'ivory-code ivory-code ivory-code ivory-code ivory-code ivory-code ivory-code',
     time: new Date().toDateString(),
     url: '/Blog',
     image: '/images/smileHeart.png',
   },
   {
-    username: 'khs',
-    content:
-      'content content content content content content content content content content',
+    username: 'khs-log',
+    content: 'khs-log khs-log khs-log khs-log khs-log',
     time: new Date().toDateString(),
     url: '/Blog',
     image: '/images/smileHeart.png',
