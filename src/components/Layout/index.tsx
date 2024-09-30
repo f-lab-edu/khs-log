@@ -8,10 +8,24 @@ interface Props {
 }
 
 const Layout = ({children}: Props) => {
-  const [isSideBarVisible, setIsSideBarVisible] = useState(false)
+  const [isSideBarVisible, setIsSideBarVisible] = useState(
+    window.innerWidth >= 1179,
+  )
+
+  const handleResize = () => {
+    if (window.innerWidth <= 1179) {
+      setIsSideBarVisible(true)
+    } else {
+      setIsSideBarVisible(false)
+    }
+  }
 
   useEffect(() => {
-    setIsSideBarVisible(true)
+    handleResize()
+
+    window.addEventListener('resize', handleResize)
+
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   return (
