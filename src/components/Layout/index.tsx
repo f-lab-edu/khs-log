@@ -35,10 +35,11 @@ const Layout = ({children}: Props) => {
           isSideBarVisible ? 'pl-24 md:pl-0' : 'pl-80 xl:pl-24 md:pl-0'
         }`}>
         <LeftSideBar isLeftSideBarVisible={isSideBarVisible} />
-        <div className={`flex py-6 md:py-0`}>
+        <div className={`flex py-6 md:py-0 h-screen`}>
           <div
-            className={`relative flex grow max-w-full bg-n-1 rounded-[1.25rem] md:rounded-none dark:bg-n-6`}>
-            <div className={`relative flex flex-col grow max-w-full md:pt-18`}>
+            className={`relative flex grow max-w-full bg-n-1 rounded-[1.25rem] md:rounded-none dark:bg-n-6 pr-[22.5rem] 2xl:pr-80 lg:pr-0`}>
+            <div
+              className={`relative z-2 grow p-10 space-y-10 overflow-y-auto scroll-smooth scrollbar-none 2xl:p-6 md:p-5`}>
               {children}
             </div>
             <RightCommentBar

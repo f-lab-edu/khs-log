@@ -2,9 +2,9 @@ import Image from '@/components/Image'
 
 const BlogCard = () => {
   return (
-    <div className="max-w-[50rem]">
+    <div className="max-w-[50rem] mx-auto">
       <div className="pt-6 px-6 pb-16 space-y-4 bg-n-2 rounded-[1.25rem] md:p-5 md:pb-14">
-        <div className="relative max-w-[32.5rem] aspect-[1.6] xl:max-w-full">
+        <div className="relative max-w-[32.5rem] aspect-[1.6] xl:max-w-full mx-auto">
           <Image
             className="rounded-xl object-cover"
             src="/images/ogu.webp"

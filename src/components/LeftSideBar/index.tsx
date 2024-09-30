@@ -26,7 +26,10 @@ const LeftSideBar = ({isLeftSideBarVisible}: Props) => {
             : 'w-80 pb-58'
         }`,
       )}>
-      <div className="absolute top-0 right-0 left-0 flex items-center h-30 pl-7 pr-6 justify-between">
+      <div
+        className={`absolute top-0 right-0 left-0 flex items-center h-30 pl-7 pr-6 ${
+          isLeftSideBarVisible ? 'justify-center md:px-4' : 'justify-between'
+        }`}>
         {!isLeftSideBarVisible && <MainTitle />}
       </div>
       <div className="grow overflow-y-auto scroll-smooth scrollbar-none">

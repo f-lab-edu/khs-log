@@ -10,6 +10,7 @@ const MainPage = () => {
     <>
       <Layout>
         <BlogCard />
+        <BlogCard />
       </Layout>
     </>
   )

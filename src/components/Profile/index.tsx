@@ -6,12 +6,7 @@ interface Props {
 }
 
 const Profile = ({position = 'left', isSideBarVisible}: Props) => (
-  <div
-    className={`${
-      isSideBarVisible
-        ? 'mb-6'
-        : 'mb-3 shadow-[0_1.25rem_1.5rem_0_rgba(0,0,0,0.5)]'
-    }`}>
+  <div>
     <div
       className={`flex items-center ${
         isSideBarVisible ? 'justify-center' : 'px-2.5 py-2.5 pb-4.5'
