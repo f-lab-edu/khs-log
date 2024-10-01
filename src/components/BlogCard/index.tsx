@@ -1,3 +1,4 @@
+import Button from '@/components/Button'
 import Image from '@/components/Image'
 
 const BlogCard = () => {
@@ -14,9 +15,11 @@ const BlogCard = () => {
         </div>
         <div className="mt-4">블로그 게시글 예시입니다.</div>
         <div className="flex flex-wrap">
-          <button className="btn-dark btn-small mr-4 mt-4">
-            <span>View More</span>
-          </button>
+          <Button
+            name="View More"
+            onClick={() => console.log('View More')}
+            className="mr-4 mt-4 "
+          />
         </div>
       </div>
     </div>
