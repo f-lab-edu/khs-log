@@ -9,8 +9,8 @@ const MainPage = () => {
   return (
     <>
       <Layout>
-        <BlogCard />
-        <BlogCard />
+        <BlogCard url="/" />
+        <BlogCard url="/" />
       </Layout>
     </>
   )
