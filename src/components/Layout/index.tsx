@@ -34,15 +34,13 @@ const Layout = ({children}: Props) => {
   return (
     <div>
       <div
-        className={`pr-6 bg-n-7 md:p-0 md:bg-n-1 dark:md:bg-n-6 md:overflow-hidden ${
+        className={`pr-6 bg-n-7 md:p-0 md:bg-n-1 md:overflow-hidden ${
           isSideBarVisible ? 'pl-24 md:pl-0' : 'pl-80 xl:pl-24 md:pl-0'
         }`}>
         <LeftSideBar isLeftSideBarVisible={isSideBarVisible} />
         <div className="flex py-6 md:py-0 h-screen">
           <div
-            className={`relative flex grow max-w-full bg-n-1 rounded-[1.25rem] md:rounded-none dark:bg-n-6 ${
-              !isRightSideBarVisible ? 'pr-0' : 'pr-[22.5rem] 2xl:pr-80 lg:pr-0'
-            }`}>
+            className={`relative flex grow max-w-full bg-n-1 rounded-[1.25rem] ${!isRightSideBarVisible ? 'pr-0' : 'pr-[22.5rem] 2xl:pr-80 lg:pr-0'}`}>
             <div className="relative z-2 grow p-10 space-y-10 overflow-y-auto scroll-smooth scrollbar-none 2xl:p-6 md:p-5">
               <div className="relative flex flex-col grow max-w-full md:pt-18">
                 {children}
