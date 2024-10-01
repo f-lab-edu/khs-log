@@ -10,7 +10,7 @@ const MainPage = () => {
   return (
     <>
       <LeftSideBar />
-      <BlogCard />
+      <BlogCard url="/" />
       <RightCommentBar />
     </>
   )
