@@ -4,10 +4,13 @@ import {usePathname} from 'next/navigation'
 import Image from '@/components/Image'
 
 interface Props {
-  url?: string
+  id: number
+  title: string
+  content: string
+  image: string
 }
 
-const BlogCard = ({url}: Props) => {
+const BlogCard = ({id, title, content, image}: Props) => {
   const pathname = usePathname()
   const isBlogPage = pathname.includes('Blog')
 
@@ -18,25 +21,19 @@ const BlogCard = ({url}: Props) => {
           className={`relative w-full ${isBlogPage ? 'aspect-[1]' : 'aspect-[2.4]'} `}>
           <Image
             className="rounded-xl object-cover"
-            src="/images/ogu.webp"
+            src={image}
             fill
             alt="blogContent"
             priority
           />
         </div>
-        <div className="mt-4 base1">블로그 제목입니다.</div>
-        <div className={`mt-4 ${!isBlogPage && 'truncate'}`}>
-          블로그 게시글 예시입니다. 블로그 게시글 예시입니다. 블로그 게시글
-          예시입니다. 블로그 게시글 예시입니다. 블로그 게시글 예시입니다. 블로그
-          게시글 예시입니다. 블로그 게시글 예시입니다.
+        <div className="mt-4 base1">{title}</div>
+        <div className={`mt-4 ${!isBlogPage && 'truncate'}`}>{content}</div>
+        <div className="flex flex-wrap">
+          <Link href={`/BlogDetail/${id}`} className="btn-dark btn-small mr-4">
+            View More
+          </Link>
         </div>
-        {url && (
-          <div className="flex flex-wrap">
-            <Link href={url} className="btn-dark btn-small mr-4">
-              View More
-            </Link>
-          </div>
-        )}
       </div>
     </div>
   )
