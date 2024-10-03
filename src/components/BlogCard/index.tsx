@@ -14,7 +14,8 @@ const BlogCard = ({url}: Props) => {
   return (
     <div className="w-full max-w-[30rem] mx-auto">
       <div className="pt-6 px-6 pb-6 space-y-4 bg-n-2 rounded-[1.25rem] md:p-5 md:pb-14">
-        <div className={`relative aspect-[${isBlogPage ? '1' : '2.4'}] w-full`}>
+        <div
+          className={`relative w-full ${isBlogPage ? 'aspect-[1]' : 'aspect-[2.4]'} `}>
           <Image
             className="rounded-xl object-cover"
             src="/images/ogu.webp"
