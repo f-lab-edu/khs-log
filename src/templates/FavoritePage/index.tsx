@@ -2,15 +2,16 @@
 
 import React from 'react'
 
-import BlogCard from '@/components/BlogCard'
+import BlogList from '@/components/BlogList'
 import Layout from '@/components/Layout'
 
 const FavoritePage = () => {
   return (
     <>
       <Layout>
-        <BlogCard url="/" />
-        <BlogCard url="/" />
+        <BlogList url="/" />
+        <BlogList url="/Blog" />
+        <BlogList url="/Favorite" />
       </Layout>
     </>
   )
