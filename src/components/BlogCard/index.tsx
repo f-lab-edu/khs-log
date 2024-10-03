@@ -12,6 +12,7 @@ interface Props {
 
 const BlogCard = ({id, title, content, image}: Props) => {
   const pathname = usePathname()
+
   const isBlogPage = pathname.includes('Blog')
 
   return (
