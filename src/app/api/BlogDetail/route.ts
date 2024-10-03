@@ -12,7 +12,7 @@ const MOCK_DATA = [
     id: 2,
     title: '2nd 제목',
     content:
-      '1st Content 1st Content 1st Content 1st Content 1st Content 1st Content',
+      '2nd Content 2nd Content 2nd Content 2nd Content 2nd Content 2nd Content',
     image: '/images/doguri.png',
   },
 ]
