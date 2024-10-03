@@ -5,9 +5,10 @@ import RightCommentBar from '@/components/RightCommentBar'
 
 interface Props {
   children: React.ReactNode
+  isMainPage?: boolean
 }
 
-const Layout = ({children}: Props) => {
+const Layout = ({children, isMainPage = false}: Props) => {
   const [isSideBarVisible, setIsSideBarVisible] = useState(false)
   const [isRightSideBarVisible, setIsRightSideBarVisible] = useState(true)
 
@@ -46,11 +47,12 @@ const Layout = ({children}: Props) => {
                 {children}
               </div>
             </div>
-            {isRightSideBarVisible && (
-              <RightCommentBar
-                className={`${!isSideBarVisible && 'md:translate-x-64 md:before:absolute md:before:z-30 md:before:inset-0'}`}
-              />
-            )}
+            {isMainPage ||
+              (isRightSideBarVisible && (
+                <RightCommentBar
+                  className={`${!isSideBarVisible && 'md:translate-x-64 md:before:absolute md:before:z-30 md:before:inset-0'}`}
+                />
+              ))}
           </div>
         </div>
       </div>

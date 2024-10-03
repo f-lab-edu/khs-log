@@ -7,6 +7,7 @@ const config: Config = {
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/templates/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {
@@ -117,6 +118,33 @@ const config: Config = {
         },
       })
       addComponents({
+        '.h1': {
+          '@apply font-sans text-6xl font-bold -tracking-[.025em]': {},
+        },
+        '.h2': {
+          '@apply font-sans text-5xl font-bold -tracking-[.025em]': {},
+        },
+        '.h3': {
+          '@apply font-sans text-4xl font-bold -tracking-[.045em]': {},
+        },
+        '.h4': {
+          '@apply font-sans text-3xl font-bold -tracking-[.02em]': {},
+        },
+        '.h5': {
+          '@apply font-sans text-2xl font-semibold -tracking-[.03em]': {},
+        },
+        '.h6': {
+          '@apply font-sans text-xl font-semibold -tracking-[.03em]': {},
+        },
+        '.body1': {
+          '@apply text-[1.5rem] leading-9 -tracking-[.03em]': {},
+        },
+        '.body1S': {
+          '@apply text-[1.375rem] leading-7 -tracking-[.02em]': {},
+        },
+        '.body2': {
+          '@apply text-[1.0625rem] leading-6 -tracking-[.01em]': {},
+        },
         '.base1': {
           '@apply font-sans text-[1rem] leading-6 font-medium -tracking-[.03em]':
             {},
