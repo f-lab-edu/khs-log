@@ -27,6 +27,8 @@ const config: Config = {
         lightGray: '#ededed',
         retroCream: '#faf9f6',
         background: '#141718',
+        black: '#000000',
+        white: '#ffffff',
         primary: {
           1: '#0084FF',
           2: '#3FDD78',
@@ -37,6 +39,12 @@ const config: Config = {
           3: '#8E55EA',
           4: '#8C6584',
           5: '#DDA73F',
+          6: '#F7DF1E',
+          7: '#61DAFB',
+          8: '#E10098',
+          9: '#E37400',
+          10: '#DD2C00',
+          11: '#F24E1E',
         },
         n: {
           1: '#FEFEFE',
