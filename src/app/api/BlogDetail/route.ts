@@ -1,6 +1,6 @@
 import {NextResponse} from 'next/server'
 
-const MOCK_DATA = [
+export const MOCK_DATA = [
   {
     id: 1,
     title: '1st Title',
@@ -10,9 +10,22 @@ const MOCK_DATA = [
   },
   {
     id: 2,
-    title: '2nd 제목',
+    title: '2nd 제목 2nd 제목 2nd 제목 2nd 제목 2nd 제목',
     content:
-      '2nd Content 2nd Content 2nd Content 2nd Content 2nd Content 2nd Content',
+      '2번째 콘텐츠 2번째 콘텐츠 2번째 콘텐츠 2번째 콘텐츠 2번째 콘텐츠 2번째 콘텐츠 2번째 콘텐츠 2번째 콘텐츠',
+    image: '/images/doguri.png',
+  },
+  {
+    id: 3,
+    title: '3rd Title',
+    content:
+      '3rd contents 3rd contents 3rd contents 3rd contents 3rd contents 3rd contents 3rd contents 3rd contents 3rd contents',
+    image: '/images/ogu.webp',
+  },
+  {
+    id: 4,
+    title: '4th 제목 4th 제목 4th 제목 4th 제목',
+    content: '4th 4th 4th 4th 4th',
     image: '/images/doguri.png',
   },
 ]

@@ -2,39 +2,25 @@
 
 import React from 'react'
 
+import {MOCK_DATA} from '@/app/api/BlogDetail/route'
 import BlogCard from '@/components/BlogCard'
 import Layout from '@/components/Layout'
-
-const MOCK_DATA = [
-  {
-    id: 1,
-    title: '1st Title',
-    content:
-      '1st Content 1st Content 1st Content 1st Content 1st Content 1st Content',
-    image: '/images/ogu.webp',
-  },
-  {
-    id: 2,
-    title: '2nd 제목',
-    content:
-      '1st Content 1st Content 1st Content 1st Content 1st Content 1st Content',
-    image: '/images/doguri.png',
-  },
-]
 
 const BlogPage = () => {
   return (
     <>
       <Layout>
-        {MOCK_DATA.map((data, index) => (
-          <BlogCard
-            key={index}
-            id={data.id}
-            title={data.title}
-            content={data.content}
-            image={data.image}
-          />
-        ))}
+        <div className="grid grid-cols-1 gap-y-6 md:grid-cols-2 md:gap-x-8">
+          {MOCK_DATA.map((data, index) => (
+            <BlogCard
+              key={index}
+              id={data.id}
+              title={data.title}
+              content={data.content}
+              image={data.image}
+            />
+          ))}
+        </div>
       </Layout>
     </>
   )

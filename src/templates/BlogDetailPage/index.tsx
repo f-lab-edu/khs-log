@@ -35,7 +35,7 @@ const BlogDetailPage = () => {
       <Suspense fallback={<Typography text="Loading..." />}>
         {selectedBlog && (
           <>
-            <div className="relative w-full aspect-[1]">
+            <div className="relative w-full aspect-[2.4]">
               <Image
                 className="rounded-xl object-cover"
                 src={selectedBlog.image}
@@ -45,8 +45,14 @@ const BlogDetailPage = () => {
               />
             </div>
             <div>
-              <Typography text={selectedBlog.title} />
-              <Typography text={selectedBlog.content} />
+              <Typography
+                text={selectedBlog.title}
+                className="mt-4 h3 leading-[4rem] 2xl:mb-2 2xl:h4 font-black"
+              />
+              <Typography
+                text={selectedBlog.content}
+                className="mt-4 body2 font-semibold text-n-6"
+              />
             </div>
           </>
         )}
