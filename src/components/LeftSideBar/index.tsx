@@ -32,7 +32,7 @@ const LeftSideBar = ({isLeftSideBarVisible}: Props) => {
     },
     {
       title: '글 작성하기',
-      url: '/CreateBlog',
+      url: '/BlogCreate',
       icon: 'create',
       iconClass: 'fill-primary-2',
     },
