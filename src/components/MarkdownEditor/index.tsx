@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import {useCallback, useEffect, useState} from 'react'
 import {remark} from 'remark'
 import html from 'remark-html'
@@ -35,11 +36,13 @@ const MarkdownEditor = () => {
   return (
     <div className="flex flex-col h-screen p-4">
       <div className="flex justify-end items-center h-18">
-        <Button
-          name="게시글 등록"
-          onClick={() => console.log('click login button')}
-          className="border border-gray-300"
-        />
+        <Link href="/Blog">
+          <Button
+            name="게시글 등록"
+            onClick={() => console.log('click create button')}
+            className="border border-gray-300"
+          />
+        </Link>
       </div>
       <div className="mb-4">
         <h2 className="text-xl font-bold mb-2">제목</h2>
