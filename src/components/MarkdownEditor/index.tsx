@@ -6,6 +6,7 @@ import html from 'remark-html'
 
 import Button from '@/components/Button'
 import Input from '@/components/Input'
+import Textarea from '@/components/Textarea'
 
 const MarkdownEditor = () => {
   const [title, setTitle] = useState('')
@@ -60,11 +61,11 @@ const MarkdownEditor = () => {
       </div>
       <div className="mt-4">
         <h2 className="text-xl font-bold mb-2">내용</h2>
-        <textarea
+        <Textarea
           value={content}
-          onChange={handleContentChange}
-          className="w-full h-48 p-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 resize-none"
           placeholder="내용을 입력해주세요."
+          onChange={handleContentChange}
+          className="w-full h-48 p-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500"
         />
       </div>
     </div>
