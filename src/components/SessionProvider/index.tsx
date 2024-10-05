@@ -23,9 +23,17 @@ export default function SessionProvider({children}: Props) {
       const {data} = await supabase
         .from('users')
         .select('*')
-        .eq('id', userSession.session?.user.id)
+        .eq('id', userSession.session.user.id)
         .single()
-      setUser(data)
+
+      setUser({
+        ...data,
+        id: data?.id ?? '',
+        role: data?.role ?? '',
+        email: data?.email ?? '',
+        created_at: data?.created_at ?? new Date().toISOString(),
+        nickname: userSession.session.user.user_metadata.user_name ?? '',
+      })
     }
   }
 

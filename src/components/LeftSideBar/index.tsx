@@ -67,7 +67,11 @@ const LeftSideBar = ({isLeftSideBarVisible}: Props) => {
         />
       </div>
       <div className="absolute left-0 bottom-0 right-0 pb-6 px-4 bg-n-7 before:absolute before:left-0 before:right-0 before:bottom-full before:h-10 before:bg-gradient-to-t before:from-[#131617] before:to-[rgba(19,22,23,0)] before:pointer-events-none md:px-3">
-        <Profile isSideBarVisible={isLeftSideBarVisible} isLogin={isLogin} />
+        <Profile
+          isSideBarVisible={isLeftSideBarVisible}
+          isLogin={isLogin}
+          nickname={user?.nickname ?? ''}
+        />
       </div>
     </div>
   )

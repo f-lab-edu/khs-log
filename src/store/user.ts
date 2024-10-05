@@ -5,6 +5,7 @@ export interface User {
   email: string
   id: string
   role: string
+  nickname: string
 }
 
 interface UserState {

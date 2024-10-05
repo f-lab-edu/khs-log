@@ -15,7 +15,7 @@ const LoginForm = ({className}: Props) => {
 
   const isLogin = user !== null
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
 
     if (user) {
@@ -34,7 +34,11 @@ const LoginForm = ({className}: Props) => {
 
   return (
     <form onSubmit={handleSubmit} className={className}>
-      <Profile position="right" isLogin={isLogin} />
+      <Profile
+        position="right"
+        isLogin={isLogin}
+        nickname={user?.nickname ?? ''}
+      />
       <Button buttonName={user ? 'Logout' : 'Login'} type="submit" />
     </form>
   )

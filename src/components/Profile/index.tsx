@@ -1,12 +1,18 @@
 import Image from '@/components/Image'
 
 interface Props {
+  nickname: string
   position?: 'left' | 'right'
   isLogin: boolean
   isSideBarVisible?: boolean
 }
 
-const Profile = ({position = 'left', isLogin, isSideBarVisible}: Props) => (
+const Profile = ({
+  nickname,
+  position = 'left',
+  isLogin,
+  isSideBarVisible,
+}: Props) => (
   <div>
     <div
       className={`flex items-center ${
@@ -25,7 +31,7 @@ const Profile = ({position = 'left', isLogin, isSideBarVisible}: Props) => (
         />
       </div>
       {position === 'left' && !isSideBarVisible ? (
-        <div className="text-n-1 base2 font-extrabold">khs-log</div>
+        <div className="text-n-1 base2 font-extrabold">{nickname}</div>
       ) : null}
     </div>
   </div>
