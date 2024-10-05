@@ -5,6 +5,7 @@ import Navigation, {
 } from '@/components/LeftSideBar/Navigation'
 import MainTitle from '@/components/MainTitle'
 import Profile from '@/components/Profile'
+import {useUser} from '@/store/user'
 
 const NAVIGATION: NavigationType[] = [
   {
@@ -38,6 +39,10 @@ interface Props {
 }
 
 const LeftSideBar = ({isLeftSideBarVisible}: Props) => {
+  const user = useUser(state => state.user)
+
+  const isLogin = user !== null
+
   return (
     <div
       className={twMerge(
@@ -51,7 +56,9 @@ const LeftSideBar = ({isLeftSideBarVisible}: Props) => {
         className={`absolute top-0 right-0 left-0 flex items-center h-30 pl-7 pr-6 ${
           isLeftSideBarVisible ? 'justify-center md:px-4' : 'justify-between'
         }`}>
-        {!isLeftSideBarVisible && <MainTitle title="khs-log" />}
+        {!isLeftSideBarVisible && (
+          <MainTitle title="khs-log" isLogin={isLogin} />
+        )}
       </div>
       <div className="grow overflow-y-auto scroll-smooth scrollbar-none">
         <Navigation
@@ -60,7 +67,7 @@ const LeftSideBar = ({isLeftSideBarVisible}: Props) => {
         />
       </div>
       <div className="absolute left-0 bottom-0 right-0 pb-6 px-4 bg-n-7 before:absolute before:left-0 before:right-0 before:bottom-full before:h-10 before:bg-gradient-to-t before:from-[#131617] before:to-[rgba(19,22,23,0)] before:pointer-events-none md:px-3">
-        <Profile isSideBarVisible={isLeftSideBarVisible} />
+        <Profile isSideBarVisible={isLeftSideBarVisible} isLogin={isLogin} />
       </div>
     </div>
   )

@@ -13,6 +13,8 @@ const LoginForm = ({className}: Props) => {
 
   const supabase = createBrowserClient()
 
+  const isLogin = user !== null
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault()
 
@@ -32,7 +34,7 @@ const LoginForm = ({className}: Props) => {
 
   return (
     <form onSubmit={handleSubmit} className={className}>
-      <Profile position="right" />
+      <Profile position="right" isLogin={isLogin} />
       <Button buttonName={user ? 'Logout' : 'Login'} type="submit" />
     </form>
   )
