@@ -6,38 +6,38 @@ import Navigation, {
 import MainTitle from '@/components/MainTitle'
 import Profile from '@/components/Profile'
 
+const NAVIGATION: NavigationType[] = [
+  {
+    title: '홈',
+    url: '/',
+    icon: 'home',
+    iconClass: 'fill-accent-1',
+  },
+  {
+    title: '게시글',
+    url: '/Blog',
+    icon: 'blog',
+    iconClass: 'fill-accent-2',
+  },
+  {
+    title: '즐겨찾기',
+    url: '/Favorite',
+    icon: 'favorite',
+    iconClass: 'fill-accent-5',
+  },
+  {
+    title: '글 작성하기',
+    url: '/BlogCreate',
+    icon: 'create',
+    iconClass: 'fill-primary-2',
+  },
+]
+
 interface Props {
   isLeftSideBarVisible?: boolean
 }
 
 const LeftSideBar = ({isLeftSideBarVisible}: Props) => {
-  const navigation: NavigationType[] = [
-    {
-      title: '홈',
-      url: '/',
-      icon: 'home',
-      iconClass: 'fill-accent-1',
-    },
-    {
-      title: '게시글',
-      url: '/Blog',
-      icon: 'blog',
-      iconClass: 'fill-accent-2',
-    },
-    {
-      title: '즐겨찾기',
-      url: '/Favorite',
-      icon: 'favorite',
-      iconClass: 'fill-accent-5',
-    },
-    {
-      title: '글 작성하기',
-      url: '/BlogCreate',
-      icon: 'create',
-      iconClass: 'fill-primary-2',
-    },
-  ]
-
   return (
     <div
       className={twMerge(
@@ -56,7 +56,7 @@ const LeftSideBar = ({isLeftSideBarVisible}: Props) => {
       <div className="grow overflow-y-auto scroll-smooth scrollbar-none">
         <Navigation
           isSideBarVisible={isLeftSideBarVisible}
-          items={navigation}
+          items={NAVIGATION}
         />
       </div>
       <div className="absolute left-0 bottom-0 right-0 pb-6 px-4 bg-n-7 before:absolute before:left-0 before:right-0 before:bottom-full before:h-10 before:bg-gradient-to-t before:from-[#131617] before:to-[rgba(19,22,23,0)] before:pointer-events-none md:px-3">
