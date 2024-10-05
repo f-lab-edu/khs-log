@@ -1,15 +1,22 @@
 import Button from '@/components/Button'
 import Profile from '@/components/Profile'
+import {createBrowserClient} from '@/supabase/client'
 
 interface Props {
   className?: string
-  onSubmit: () => void
 }
 
-const LoginForm = ({className, onSubmit}: Props) => {
+const LoginForm = ({className}: Props) => {
+  const supabase = createBrowserClient()
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault()
-    onSubmit()
+    supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        redirectTo: location.origin,
+      },
+    })
   }
 
   return (

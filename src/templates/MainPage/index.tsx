@@ -47,10 +47,7 @@ const MainPage = () => {
   return (
     <>
       <Layout isMainView>
-        <LoginForm
-          onSubmit={() => console.log('click login button')}
-          className="flex justify-end items-center h-18 mb-6 selection:border-b border-n-3"
-        />
+        <LoginForm className="flex justify-end items-center h-18 mb-6 selection:border-b border-n-3" />
         <Typography
           text="안녕하세요!! 반갑습니다! 👋🏻"
           className="mb-4 h2 md:h3 font-black text-n-7"
