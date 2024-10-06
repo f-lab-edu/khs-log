@@ -1,14 +1,17 @@
 'use client'
 
 import {useParams} from 'next/navigation'
-import React, {Suspense, useEffect, useState} from 'react'
+import React, {Suspense, useCallback, useEffect, useState} from 'react'
+import {remark} from 'remark'
+import html from 'remark-html'
 
 import Image from '@/components/Image'
 import Layout from '@/components/Layout'
+import MarkdownView from '@/components/MarkdownView'
 import Typography from '@/components/Typography'
 
 interface Blog {
-  id: number
+  id: string
   title: string
   content: string
   image: string
@@ -16,29 +19,42 @@ interface Blog {
 
 const BlogDetailPage = () => {
   const params = useParams()
-  const [blogs, setBlogs] = useState<Blog[]>([])
+  const [blogDetailData, setBlogDetailData] = useState<Blog | null>(null) // 단일 객체로 변경
+  const [htmlContent, setHtmlContent] = useState('')
 
-  const selectedBlog = blogs.find(blog => blog.id === Number(params.id))
+  const convertMarkdownToHtml = useCallback(async (markdownBody: string) => {
+    const processedContent = await remark().use(html).process(markdownBody)
+    setHtmlContent(processedContent.toString())
+  }, [])
+
+  const fetchBlogDetailData = useCallback(async () => {
+    const res = await fetch(`/api/BlogDetail?id=${params.id}`)
+    const data = await res.json()
+
+    setBlogDetailData(data)
+  }, [params.id])
 
   useEffect(() => {
-    const fetchBlogs = async () => {
-      const response = await fetch('/api/BlogDetail')
-      const data: Blog[] = await response.json()
-      setBlogs(data)
+    if (params.id) {
+      void fetchBlogDetailData()
     }
+  }, [fetchBlogDetailData, params.id])
 
-    void fetchBlogs()
-  }, [])
+  useEffect(() => {
+    if (blogDetailData?.content) {
+      void convertMarkdownToHtml(blogDetailData.content)
+    }
+  }, [blogDetailData?.content, convertMarkdownToHtml])
 
   return (
     <Layout>
       <Suspense fallback={<Typography text="Loading..." />}>
-        {selectedBlog && (
+        {blogDetailData ? (
           <>
             <div className="relative w-full aspect-[2.4]">
               <Image
                 className="rounded-xl object-cover"
-                src={selectedBlog.image}
+                src={blogDetailData.image}
                 fill
                 alt="blogDetailImage"
                 priority
@@ -46,15 +62,17 @@ const BlogDetailPage = () => {
             </div>
             <div>
               <Typography
-                text={selectedBlog.title}
+                text={blogDetailData.title}
                 className="mt-4 h3 leading-[4rem] 2xl:mb-2 2xl:h4 font-black"
               />
-              <Typography
-                text={selectedBlog.content}
+              <MarkdownView
+                content={htmlContent}
                 className="mt-4 body2 font-semibold text-n-6"
               />
             </div>
           </>
+        ) : (
+          <Typography text="No blog data found." />
         )}
       </Suspense>
     </Layout>

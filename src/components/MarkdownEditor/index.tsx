@@ -8,6 +8,7 @@ import html from 'remark-html'
 import {createBlog} from '@/app/api/createBlog'
 import Button from '@/components/Button'
 import Input from '@/components/Input'
+import MarkdownView from '@/components/MarkdownView'
 import Textarea from '@/components/Textarea'
 import {useUser} from '@/store/user'
 
@@ -72,9 +73,9 @@ const MarkdownEditor = () => {
       </div>
       <div className="flex-1 flex flex-col">
         <h2 className="text-xl font-bold mb-2">미리보기</h2>
-        <div
+        <MarkdownView
+          content={htmlContent}
           className="flex-1 overflow-y-auto p-4 border border-gray-300 rounded-md shadow-sm bg-white"
-          dangerouslySetInnerHTML={{__html: htmlContent}}
         />
       </div>
       <div className="mt-4">
