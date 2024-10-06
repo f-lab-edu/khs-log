@@ -5,11 +5,15 @@ import {useCallback, useEffect, useState} from 'react'
 import {remark} from 'remark'
 import html from 'remark-html'
 
+import {createBlog} from '@/app/api/createBlog'
 import Button from '@/components/Button'
 import Input from '@/components/Input'
 import Textarea from '@/components/Textarea'
+import {useUser} from '@/store/user'
 
 const MarkdownEditor = () => {
+  const user = useUser(state => state.user)
+
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [htmlContent, setHtmlContent] = useState('')
@@ -29,6 +33,17 @@ const MarkdownEditor = () => {
     setHtmlContent(processedContent.toString())
   }, [])
 
+  const handleCreate = useCallback(async () => {
+    if (title.length === 0) {
+      return alert('제목을 입력해주세요.')
+    }
+
+    if (content.length === 0) {
+      return alert('내용을 입력해주세요.')
+    }
+    await createBlog({id: user?.id ?? '', title, content})
+  }, [content, title, user?.id])
+
   useEffect(() => {
     void convertMarkdownToHtml(content)
   }, [content, convertMarkdownToHtml])
@@ -39,7 +54,7 @@ const MarkdownEditor = () => {
         <Link href="/Blog">
           <Button
             buttonName="게시글 등록"
-            onClick={() => console.log('click create button')}
+            onClick={handleCreate}
             className="border border-gray-300"
           />
         </Link>
