@@ -9,17 +9,13 @@ import Image from '@/components/Image'
 import Layout from '@/components/Layout'
 import MarkdownView from '@/components/MarkdownView'
 import Typography from '@/components/Typography'
-
-interface Blog {
-  id: string
-  title: string
-  content: string
-  image: string
-}
+import {type Database} from '@/supabase/database.types'
 
 const BlogDetailPage = () => {
   const params = useParams()
-  const [blogDetailData, setBlogDetailData] = useState<Blog | null>(null) // 단일 객체로 변경
+  const [blogDetailData, setBlogDetailData] = useState<
+    Database['public']['Tables']['posts']['Row'] | null
+  >(null)
   const [htmlContent, setHtmlContent] = useState('')
 
   const convertMarkdownToHtml = useCallback(async (markdownBody: string) => {
@@ -51,15 +47,17 @@ const BlogDetailPage = () => {
       <Suspense fallback={<Typography text="Loading..." />}>
         {blogDetailData ? (
           <>
-            <div className="relative w-full aspect-[2.4]">
-              <Image
-                className="rounded-xl object-cover"
-                src={blogDetailData.image}
-                fill
-                alt="blogDetailImage"
-                priority
-              />
-            </div>
+            {blogDetailData.titleImageUrl && (
+              <div className="relative w-full aspect-[2.4]">
+                <Image
+                  className="rounded-xl object-cover"
+                  src={blogDetailData.titleImageUrl}
+                  fill
+                  alt="blogDetailImage"
+                  priority
+                />
+              </div>
+            )}
             <div>
               <Typography
                 text={blogDetailData.title}

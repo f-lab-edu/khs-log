@@ -29,6 +29,7 @@ const BlogPage = () => {
               key={index}
               id={data.id}
               title={data.title}
+              imageUrl={data.titleImageUrl}
               content={data.content}
             />
           ))}

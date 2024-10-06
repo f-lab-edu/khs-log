@@ -1,15 +1,17 @@
 import Link from 'next/link'
 import {usePathname} from 'next/navigation'
 
+import Image from '@/components/Image'
 import Typography from '@/components/Typography'
 
 interface Props {
   id: string
   title: string
+  imageUrl: string
   content: string
 }
 
-const BlogCard = ({id, title, content}: Props) => {
+const BlogCard = ({id, title, imageUrl, content}: Props) => {
   const pathname = usePathname()
 
   const isBlogPage = pathname.includes('Blog')
@@ -18,13 +20,13 @@ const BlogCard = ({id, title, content}: Props) => {
     <div className="w-full max-w-[30rem] mx-auto">
       <div className="pt-6 px-6 pb-6 space-y-4 bg-n-2 rounded-[1.25rem] md:p-5 md:pb-5">
         <div className={`relative w-full aspect-[2.4]`}>
-          {/* <Image
+          <Image
             className="rounded-xl object-cover"
-            src={image}
+            src={imageUrl}
             fill
             alt="blogContent"
             priority
-          /> */}
+          />
         </div>
         <div
           className={`mt-4 h3 leading-[4rem] 2xl:mb-2 2xl:h4 font-black ${isBlogPage && 'truncate'}`}>

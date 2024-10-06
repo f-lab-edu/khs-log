@@ -3,10 +3,12 @@ import {createBrowserClient} from '@/supabase/client'
 export async function createBlog({
   id,
   title,
+  imageUrl,
   content,
 }: {
   id: string
   title: string
+  imageUrl: string
   content: string
 }) {
   const supabase = createBrowserClient()
@@ -18,6 +20,7 @@ export async function createBlog({
       content,
       created_at: new Date().toISOString(),
       published: true,
+      titleImageUrl: imageUrl,
     })
 
     if (error) {

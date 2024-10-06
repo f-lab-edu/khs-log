@@ -16,11 +16,16 @@ const MarkdownEditor = () => {
   const user = useUser(state => state.user)
 
   const [title, setTitle] = useState('')
+  const [imageUrl, setImageUrl] = useState('')
   const [content, setContent] = useState('')
   const [htmlContent, setHtmlContent] = useState('')
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value)
+  }
+
+  const handleImageUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setImageUrl(event.target.value)
   }
 
   const handleContentChange = (
@@ -42,8 +47,8 @@ const MarkdownEditor = () => {
     if (content.length === 0) {
       return alert('내용을 입력해주세요.')
     }
-    await createBlog({id: user?.id ?? '', title, content})
-  }, [content, title, user?.id])
+    await createBlog({id: user?.id ?? '', title, content, imageUrl})
+  }, [content, imageUrl, title, user?.id])
 
   useEffect(() => {
     void convertMarkdownToHtml(content)
@@ -66,6 +71,17 @@ const MarkdownEditor = () => {
           value={title}
           placeholder="제목을 입력해주세요."
           onChange={handleTitleChange}
+          className={
+            'w-full p-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500'
+          }
+        />
+      </div>
+      <div className="mb-4">
+        <h2 className="text-xl font-bold mb-2">메인 이미지</h2>
+        <Input
+          value={imageUrl}
+          placeholder="메인 이미지 URL을 입력해주세요."
+          onChange={handleImageUrlChange}
           className={
             'w-full p-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500'
           }
