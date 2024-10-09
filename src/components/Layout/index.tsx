@@ -1,10 +1,12 @@
-import {useParams} from 'next/navigation'
+import axios from 'axios'
+import {useParams, usePathname} from 'next/navigation'
 import {useCallback, useEffect, useState} from 'react'
 
 import {createComment} from '@/app/api/createComment'
 import LeftSideBar from '@/components/LeftSideBar'
 import RightCommentBar from '@/components/RightCommentBar'
 import {useUser} from '@/store/user'
+import {type Database} from '@/supabase/database.types'
 
 interface Props {
   children: React.ReactNode
@@ -13,11 +15,15 @@ interface Props {
 
 const Layout = ({children, isMainView = false}: Props) => {
   const params = useParams()
+  const isBlogPage = usePathname().includes('Blog')
 
   const user = useUser(state => state.user)
 
   const [isSideBarVisible, setIsSideBarVisible] = useState(false)
   const [isRightSideBarVisible, setIsRightSideBarVisible] = useState(true)
+  const [blogCommentData, setBlogCommentData] = useState<
+    Database['public']['Tables']['comments']['Row'][] | null
+  >(null)
 
   const handleResize = () => {
     if (window.innerWidth <= 1179) {
@@ -34,17 +40,38 @@ const Layout = ({children, isMainView = false}: Props) => {
   }
 
   const handleCreateComment = useCallback(
-    async ({userId, content}: {userId: string; content: string}) => {
-      await createComment({userId, blogId: `${params.id}`, content})
+    async ({
+      username,
+      userId,
+      content,
+    }: {
+      username: string
+      userId: string
+      content: string
+    }) => {
+      await createComment({username, userId, blogId: `${params.id}`, content})
     },
     [params.id],
   )
+
+  const fetchBlogCommentData = useCallback(async () => {
+    const res = await axios(`/api/BlogDetail?id=${params.id}`)
+    const data = await res.data
+
+    setBlogCommentData(data.comments)
+  }, [params.id])
 
   useEffect(() => {
     handleResize()
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
+
+  useEffect(() => {
+    if (params.id && isBlogPage) {
+      void fetchBlogCommentData()
+    }
+  }, [fetchBlogCommentData, isBlogPage, params.id])
 
   return (
     <div>
@@ -64,6 +91,7 @@ const Layout = ({children, isMainView = false}: Props) => {
             {isMainView ||
               (isRightSideBarVisible && (
                 <RightCommentBar
+                  data={blogCommentData}
                   user={user}
                   className={`${!isSideBarVisible && 'md:translate-x-64 md:before:absolute md:before:z-30 md:before:inset-0'}`}
                   createComment={handleCreateComment}

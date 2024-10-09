@@ -1,17 +1,10 @@
 import Link from 'next/link'
 
 import Image from '@/components/Image'
-
-type CommentType = {
-  username: string
-  content: string
-  time: string
-  url: string
-  image: string
-}
+import {type Database} from '@/supabase/database.types'
 
 interface Props {
-  item: CommentType
+  item: Database['public']['Tables']['comments']['Row']
 }
 
 const CommentBox = ({item}: Props) => {
@@ -31,11 +24,11 @@ const CommentBox = ({item}: Props) => {
           {item.username}
         </div>
       </div>
-      <Link className="block mt-2 pl-3" href={item.url}>
+      <Link className="block mt-2 pl-3" href={item.post_id ?? ''}>
         <div className="group py-3 px-3 rounded-xl transition-colors hover:bg-n-3/75">
           <div className="mt-1 base2 text-n-5">{item.content}</div>
           <div className="flex justify-between items-center mt-2">
-            <div className="caption2 text-n-4/75">{item.time}</div>
+            <div className="caption2 text-n-4/75">{item.created_at}</div>
           </div>
         </div>
       </Link>

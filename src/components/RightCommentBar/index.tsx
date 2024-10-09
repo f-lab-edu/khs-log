@@ -6,67 +6,24 @@ import CommentInput from '@/components/CommentInput'
 import LoginForm from '@/components/LoginForm'
 import CommentBox from '@/components/RightCommentBar/CommentBox'
 import {type User} from '@/store/user'
-
-const MOCK_DATA = [
-  {
-    username: 'khs',
-    content:
-      'content content content content content content content content content content',
-    time: new Date().toDateString(),
-    url: '/Blog',
-    image: '/images/smileHeart.png',
-  },
-  {
-    username: 'kwon',
-    content: 'kwon kwon kwon kwon kwon kwon kwon kwon kwon',
-    time: new Date().toDateString(),
-    url: '/Blog',
-    image: '/images/smileHeart.png',
-  },
-  {
-    username: 'han',
-    content: 'han han han han han',
-    time: new Date().toDateString(),
-    url: '/Blog',
-    image: '/images/smileHeart.png',
-  },
-  {
-    username: 'sung',
-    content: 'sung sung sung sung sung sung sung',
-    time: new Date().toDateString(),
-    url: '/Blog',
-    image: '/images/smileHeart.png',
-  },
-  {
-    username: 'ivory-code',
-    content:
-      'ivory-code ivory-code ivory-code ivory-code ivory-code ivory-code ivory-code',
-    time: new Date().toDateString(),
-    url: '/Blog',
-    image: '/images/smileHeart.png',
-  },
-  {
-    username: 'khs-log',
-    content: 'khs-log khs-log khs-log khs-log khs-log',
-    time: new Date().toDateString(),
-    url: '/Blog',
-    image: '/images/smileHeart.png',
-  },
-]
+import {type Database} from '@/supabase/database.types'
 
 interface Props {
+  data: Database['public']['Tables']['comments']['Row'][] | null
   user: User | null
   className?: string
   createComment?: ({
+    username,
     userId,
     content,
   }: {
+    username: string
     userId: string
     content: string
   }) => Promise<void>
 }
 
-const RightCommentBar = ({user, className, createComment}: Props) => {
+const RightCommentBar = ({data, user, className, createComment}: Props) => {
   const pathname = usePathname()
 
   const isBlogPage = pathname === '/Blog'
@@ -74,10 +31,14 @@ const RightCommentBar = ({user, className, createComment}: Props) => {
   const handleInput = useCallback(
     async (content: string) => {
       if (createComment) {
-        await createComment({userId: user?.id ?? '', content})
+        await createComment({
+          username: user?.nickname ?? '',
+          userId: user?.id ?? '',
+          content,
+        })
       }
     },
-    [createComment, user?.id],
+    [createComment, user?.id, user?.nickname],
   )
 
   return (
@@ -89,11 +50,11 @@ const RightCommentBar = ({user, className, createComment}: Props) => {
       <div className="absolute top-24 left-0 right-0 flex items-center px-9 md:px-6">
         <div className="base2 text-n-4/75">Comment Length</div>
         <div className="ml-3 px-2 bg-n-3 rounded-lg caption1 text-n-4">
-          {MOCK_DATA.length}
+          {data?.length}
         </div>
       </div>
       <div className="grow overflow-y-auto scroll-smooth px-6 md:px-3">
-        {MOCK_DATA.map((data, index) => {
+        {data?.map((data, index) => {
           return <CommentBox key={index} item={data} />
         })}
       </div>
