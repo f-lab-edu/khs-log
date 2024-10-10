@@ -53,7 +53,7 @@ const RightCommentBar = ({data, user, className, createComment}: Props) => {
           {data?.length}
         </div>
       </div>
-      <div className="grow overflow-y-auto scroll-smooth px-6 md:px-3">
+      <div className="grow overflow-y-auto scroll-smooth items-center px-6 md:px-3">
         {data?.map((data, index) => {
           return <CommentBox key={index} item={data} />
         })}
