@@ -17,6 +17,7 @@ export type Database = {
           post_id: string | null
           updated_at: string | null
           user_id: string | null
+          username: string
         }
         Insert: {
           content: string
@@ -25,6 +26,7 @@ export type Database = {
           post_id?: string | null
           updated_at?: string | null
           user_id?: string | null
+          username?: string
         }
         Update: {
           content?: string
@@ -33,6 +35,7 @@ export type Database = {
           post_id?: string | null
           updated_at?: string | null
           user_id?: string | null
+          username?: string
         }
         Relationships: [
           {
@@ -92,6 +95,7 @@ export type Database = {
           id: string
           published: boolean | null
           title: string
+          titleImageUrl: string
           updated_at: string | null
         }
         Insert: {
@@ -101,6 +105,7 @@ export type Database = {
           id?: string
           published?: boolean | null
           title: string
+          titleImageUrl?: string
           updated_at?: string | null
         }
         Update: {
@@ -110,6 +115,7 @@ export type Database = {
           id?: string
           published?: boolean | null
           title?: string
+          titleImageUrl?: string
           updated_at?: string | null
         }
         Relationships: [
@@ -128,18 +134,21 @@ export type Database = {
           email: string
           id: string
           role: string
+          username: string
         }
         Insert: {
           created_at?: string
           email: string
           id?: string
           role: string
+          username?: string
         }
         Update: {
           created_at?: string
           email?: string
           id?: string
           role?: string
+          username?: string
         }
         Relationships: []
       }
