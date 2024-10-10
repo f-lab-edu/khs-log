@@ -15,15 +15,19 @@ interface Props {
 
 const Layout = ({children, isMainView = false}: Props) => {
   const params = useParams()
-  const isBlogPage = usePathname().includes('Blog')
+  const isBlogDetailPage =
+    usePathname().includes('Blog') && params.id !== undefined
 
   const user = useUser(state => state.user)
 
   const [isSideBarVisible, setIsSideBarVisible] = useState(false)
   const [isRightSideBarVisible, setIsRightSideBarVisible] = useState(true)
+  const [commentsData, setCommentsData] = useState<
+    Database['public']['Tables']['comments']['Row'][] | []
+  >([])
   const [blogCommentData, setBlogCommentData] = useState<
-    Database['public']['Tables']['comments']['Row'][] | null
-  >(null)
+    Database['public']['Tables']['comments']['Row'][] | []
+  >([])
 
   const handleResize = () => {
     if (window.innerWidth <= 1179) {
@@ -61,6 +65,13 @@ const Layout = ({children, isMainView = false}: Props) => {
     setBlogCommentData(data.comments)
   }, [params.id])
 
+  const fetchCommentsData = useCallback(async () => {
+    const res = await axios(`/api/Blog`)
+    const data = await res.data
+
+    setCommentsData(data)
+  }, [])
+
   useEffect(() => {
     handleResize()
     window.addEventListener('resize', handleResize)
@@ -68,10 +79,13 @@ const Layout = ({children, isMainView = false}: Props) => {
   }, [])
 
   useEffect(() => {
-    if (params.id && isBlogPage) {
+    if (isBlogDetailPage) {
       void fetchBlogCommentData()
+
+      return
     }
-  }, [fetchBlogCommentData, isBlogPage, params.id])
+    void fetchCommentsData()
+  }, [fetchBlogCommentData, fetchCommentsData, isBlogDetailPage])
 
   return (
     <div>
@@ -91,10 +105,11 @@ const Layout = ({children, isMainView = false}: Props) => {
             {isMainView ||
               (isRightSideBarVisible && (
                 <RightCommentBar
-                  data={blogCommentData}
+                  data={isBlogDetailPage ? blogCommentData : commentsData}
                   user={user}
                   className={`${!isSideBarVisible && 'md:translate-x-64 md:before:absolute md:before:z-30 md:before:inset-0'}`}
                   createComment={handleCreateComment}
+                  isBlogDetailPage={isBlogDetailPage}
                 />
               ))}
           </div>

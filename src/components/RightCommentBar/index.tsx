@@ -9,7 +9,7 @@ import {type User} from '@/store/user'
 import {type Database} from '@/supabase/database.types'
 
 interface Props {
-  data: Database['public']['Tables']['comments']['Row'][] | null
+  data: Database['public']['Tables']['comments']['Row'][] | []
   user: User | null
   className?: string
   createComment?: ({
@@ -21,9 +21,16 @@ interface Props {
     userId: string
     content: string
   }) => Promise<void>
+  isBlogDetailPage?: boolean
 }
 
-const RightCommentBar = ({data, user, className, createComment}: Props) => {
+const RightCommentBar = ({
+  data,
+  user,
+  className,
+  createComment,
+  isBlogDetailPage = true,
+}: Props) => {
   const pathname = usePathname()
 
   const isBlogPage = pathname === '/Blog'
@@ -55,7 +62,9 @@ const RightCommentBar = ({data, user, className, createComment}: Props) => {
       </div>
       <div className="grow overflow-y-auto scroll-smooth items-center px-6 md:px-3">
         {data?.map((data, index) => {
-          return <CommentBox key={index} item={data} />
+          return (
+            <CommentBox key={index} item={data} isDisabled={isBlogDetailPage} />
+          )
         })}
       </div>
       {!isBlogPage && (

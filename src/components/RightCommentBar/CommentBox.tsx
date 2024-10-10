@@ -1,15 +1,26 @@
 import Link from 'next/link'
+import {type MouseEvent} from 'react'
 
 import {type Database} from '@/supabase/database.types'
 
 interface Props {
+  isDisabled?: boolean
   item: Database['public']['Tables']['comments']['Row']
 }
 
-const CommentBox = ({item}: Props) => {
+const CommentBox = ({item, isDisabled = false}: Props) => {
+  const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    if (isDisabled) {
+      e.preventDefault()
+    }
+  }
+
   return (
     <div className="relative">
-      <Link className="block mt-2" href={item.post_id ?? ''}>
+      <Link
+        className="block mt-2"
+        href={isDisabled ? '' : `/BlogDetail/${item.post_id}`}
+        onClick={handleClick}>
         <div className="group py-3 px-3 rounded-xl transition-colors hover:bg-n-3/75">
           <div className="truncate base1 font-semibold text-n-6">
             {item.username}
