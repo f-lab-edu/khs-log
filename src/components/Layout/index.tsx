@@ -15,8 +15,7 @@ interface Props {
 
 const Layout = ({children, isMainView = false}: Props) => {
   const params = useParams()
-  const isBlogDetailPage =
-    usePathname().includes('Blog') && params.id !== undefined
+  const pathname = usePathname()
 
   const user = useUser(state => state.user)
 
@@ -28,6 +27,8 @@ const Layout = ({children, isMainView = false}: Props) => {
   const [blogCommentData, setBlogCommentData] = useState<
     Database['public']['Tables']['comments']['Row'][] | []
   >([])
+
+  const isBlogDetailPage = pathname.includes('Blog') && params.id !== undefined
 
   const handleResize = () => {
     if (window.innerWidth <= 1179) {
@@ -42,6 +43,20 @@ const Layout = ({children, isMainView = false}: Props) => {
       setIsRightSideBarVisible(true)
     }
   }
+
+  const fetchBlogCommentData = useCallback(async () => {
+    const res = await axios(`/api/BlogDetail?id=${params.id}`)
+    const data = await res.data
+
+    setBlogCommentData(data.comments)
+  }, [params.id])
+
+  const fetchCommentsData = useCallback(async () => {
+    const res = await axios(`/api/Blog`)
+    const data = await res.data
+
+    setCommentsData(data.comments)
+  }, [])
 
   const handleCreateComment = useCallback(
     async ({
@@ -58,23 +73,10 @@ const Layout = ({children, isMainView = false}: Props) => {
     [params.id],
   )
 
-  const fetchBlogCommentData = useCallback(async () => {
-    const res = await axios(`/api/BlogDetail?id=${params.id}`)
-    const data = await res.data
-
-    setBlogCommentData(data.comments)
-  }, [params.id])
-
-  const fetchCommentsData = useCallback(async () => {
-    const res = await axios(`/api/Blog`)
-    const data = await res.data
-
-    setCommentsData(data)
-  }, [])
-
   useEffect(() => {
     handleResize()
     window.addEventListener('resize', handleResize)
+
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
