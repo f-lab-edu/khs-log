@@ -3,14 +3,20 @@
 import axios from 'axios'
 import React, {useCallback, useEffect, useState} from 'react'
 
+import {getBlogsFavorites} from '@/app/api/getFavorites'
 import BlogCard from '@/components/BlogCard'
 import Layout from '@/components/Layout'
+import {useUser} from '@/store/user'
 import {type Database} from '@/supabase/database.types'
 
 const BlogPage = () => {
+  const user = useUser(state => state.user)
+
   const [blogsData, setBlogsData] = useState<
     Database['public']['Tables']['posts']['Row'][] | null
   >()
+  const [favoritesData, setFavoritesData] =
+    useState<Database['public']['Tables']['favorites']['Row'][]>()
 
   const fetchBlogsData = useCallback(async () => {
     const res = await axios(`/api/Blog`)
@@ -19,9 +25,20 @@ const BlogPage = () => {
     setBlogsData(data.posts)
   }, [])
 
+  const fetchFavoritesData = useCallback(async () => {
+    if (!user?.id) {
+      return
+    }
+    const data = await getBlogsFavorites({userId: user.id})
+
+    setFavoritesData(data)
+  }, [user?.id])
+
   useEffect(() => {
     void fetchBlogsData()
-  }, [fetchBlogsData])
+
+    void fetchFavoritesData()
+  }, [fetchBlogsData, fetchFavoritesData])
 
   return (
     <>

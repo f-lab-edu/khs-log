@@ -7,20 +7,26 @@ import {remark} from 'remark'
 import html from 'remark-html'
 import {twMerge} from 'tailwind-merge'
 
+import {getBlogFavorite} from '@/app/api/getFavorites'
 import Button from '@/components/Button'
 import Icon from '@/components/Icon'
 import Image from '@/components/Image'
 import Layout from '@/components/Layout'
 import MarkdownView from '@/components/MarkdownView'
 import Typography from '@/components/Typography'
+import {useUser} from '@/store/user'
 import {type Database} from '@/supabase/database.types'
 
 const BlogDetailPage = () => {
   const params = useParams()
+  const user = useUser(state => state.user)
 
   const [blogDetailData, setBlogDetailData] = useState<
     Database['public']['Tables']['posts']['Row'] | null
   >(null)
+
+  const [favoriteData, setFavoriteData] =
+    useState<Database['public']['Tables']['favorites']['Row'][]>()
 
   const [htmlContent, setHtmlContent] = useState('')
 
@@ -36,11 +42,23 @@ const BlogDetailPage = () => {
     setBlogDetailData(data.post)
   }, [params.id])
 
+  const fetchFavoriteData = useCallback(async () => {
+    if (params.id.length === 0) {
+      return
+    }
+
+    const data = await getBlogFavorite({blogId: `${params.id}`})
+
+    setFavoriteData(data)
+  }, [params.id])
+
   useEffect(() => {
     if (params.id) {
       void fetchBlogDetailData()
+
+      void fetchFavoriteData()
     }
-  }, [fetchBlogDetailData, params.id])
+  }, [fetchBlogDetailData, fetchFavoriteData, params.id])
 
   useEffect(() => {
     if (blogDetailData?.content) {
