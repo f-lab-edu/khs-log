@@ -3,7 +3,7 @@ import {type ReactElement} from 'react'
 interface Props {
   type?: 'submit' | 'reset' | 'button'
   className?: string
-  onClick?: () => void
+  onClick?: (event: React.FormEvent) => void | Promise<void>
   children: ReactElement
 }
 

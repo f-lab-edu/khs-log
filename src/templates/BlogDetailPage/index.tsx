@@ -2,12 +2,13 @@
 
 import axios from 'axios'
 import {useParams} from 'next/navigation'
-import React, {Suspense, useCallback, useEffect, useState} from 'react'
+import {Suspense, useCallback, useEffect, useState} from 'react'
 import {remark} from 'remark'
 import html from 'remark-html'
 import {twMerge} from 'tailwind-merge'
 
-import {getBlogFavorite} from '@/app/api/getFavorites'
+import {createFavorite} from '@/app/api/createFavorite'
+import {getBlogFavorite} from '@/app/api/getFavorite'
 import Button from '@/components/Button'
 import Icon from '@/components/Icon'
 import Image from '@/components/Image'
@@ -16,6 +17,8 @@ import MarkdownView from '@/components/MarkdownView'
 import Typography from '@/components/Typography'
 import {useUser} from '@/store/user'
 import {type Database} from '@/supabase/database.types'
+
+import type React from 'react'
 
 const BlogDetailPage = () => {
   const params = useParams()
@@ -51,6 +54,19 @@ const BlogDetailPage = () => {
 
     setFavoriteData(data)
   }, [params.id])
+
+  const handleSubmit = useCallback(
+    async (event: React.FormEvent) => {
+      event.preventDefault()
+
+      if (!user?.id || params.id.length === 0) {
+        return
+      }
+
+      await createFavorite({userId: user.id, blogId: `${params.id}`})
+    },
+    [params.id, user?.id],
+  )
 
   useEffect(() => {
     if (params.id) {
@@ -90,6 +106,7 @@ const BlogDetailPage = () => {
                 />
                 <Button
                   type="submit"
+                  onClick={handleSubmit}
                   className={twMerge('btn-small hover:bg-accent-2')}>
                   <Icon
                     iconName={'favorite'}

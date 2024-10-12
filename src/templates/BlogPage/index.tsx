@@ -3,7 +3,7 @@
 import axios from 'axios'
 import React, {useCallback, useEffect, useState} from 'react'
 
-import {getBlogsFavorites} from '@/app/api/getFavorites'
+import {getBlogsFavorites} from '@/app/api/getFavorite'
 import BlogCard from '@/components/BlogCard'
 import Layout from '@/components/Layout'
 import {useUser} from '@/store/user'
