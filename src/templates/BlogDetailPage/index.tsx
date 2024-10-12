@@ -6,6 +6,7 @@ import React, {Suspense, useCallback, useEffect, useState} from 'react'
 import {remark} from 'remark'
 import html from 'remark-html'
 
+import Icon from '@/components/Icon'
 import Image from '@/components/Image'
 import Layout from '@/components/Layout'
 import MarkdownView from '@/components/MarkdownView'
@@ -62,10 +63,13 @@ const BlogDetailPage = () => {
               </div>
             )}
             <div>
-              <Typography
-                text={blogDetailData.title}
-                className="mt-4 h3 leading-[4rem] 2xl:mb-2 2xl:h4 font-black"
-              />
+              <div className="flex justify-between items-center">
+                <Typography
+                  text={blogDetailData.title}
+                  className="mt-4 h3 leading-[4rem] 2xl:mb-2 2xl:h4 font-black"
+                />
+                <Icon iconName={'favorite'} className="fill-accent-5 w-8 h-8" />
+              </div>
               <MarkdownView
                 content={htmlContent}
                 className="mt-4 body2 font-semibold text-n-6"
