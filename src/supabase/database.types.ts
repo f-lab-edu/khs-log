@@ -1,11 +1,3 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | {[key: string]: Json | undefined}
-  | Json[]
-
 export type Database = {
   public: {
     Tables: {
@@ -57,16 +49,19 @@ export type Database = {
       favorites: {
         Row: {
           created_at: string
+          id: string
           post_id: string | null
           user_id: string | null
         }
         Insert: {
           created_at?: string
+          id?: string
           post_id?: string | null
           user_id?: string | null
         }
         Update: {
           created_at?: string
+          id?: string
           post_id?: string | null
           user_id?: string | null
         }

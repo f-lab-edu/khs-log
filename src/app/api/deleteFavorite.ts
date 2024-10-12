@@ -1,6 +1,6 @@
 import {createBrowserClient} from '@/supabase/client'
 
-export async function createFavorite({
+export async function deleteFavorite({
   userId,
   blogId,
 }: {
@@ -10,16 +10,15 @@ export async function createFavorite({
   const supabase = createBrowserClient()
 
   try {
-    const {data, error} = await supabase.from('favorites').insert({
-      user_id: userId,
-      post_id: blogId,
-      created_at: new Date().toISOString(),
-    })
+    const {error} = await supabase
+      .from('favorites')
+      .delete()
+      .eq('user_id', userId)
+      .eq('post_id', blogId)
 
     if (error) {
       return alert('권한이 없습니다.')
     }
-    return data
   } catch (error) {
     // eslint-disable-next-line no-console
     console.log(error)

@@ -7,7 +7,8 @@ import {remark} from 'remark'
 import html from 'remark-html'
 import {twMerge} from 'tailwind-merge'
 
-import {createFavorite} from '@/app/api/createFavorite'
+import {addFavorite} from '@/app/api/addFavorite'
+import {deleteFavorite} from '@/app/api/deleteFavorite'
 import {getBlogFavorite} from '@/app/api/getFavorite'
 import Button from '@/components/Button'
 import Icon from '@/components/Icon'
@@ -27,10 +28,7 @@ const BlogDetailPage = () => {
   const [blogDetailData, setBlogDetailData] = useState<
     Database['public']['Tables']['posts']['Row'] | null
   >(null)
-
-  const [favoriteData, setFavoriteData] =
-    useState<Database['public']['Tables']['favorites']['Row'][]>()
-
+  const [isBookmarked, setIsBookmarked] = useState(false)
   const [htmlContent, setHtmlContent] = useState('')
 
   const convertMarkdownToHtml = useCallback(async (markdownBody: string) => {
@@ -52,7 +50,9 @@ const BlogDetailPage = () => {
 
     const data = await getBlogFavorite({blogId: `${params.id}`})
 
-    setFavoriteData(data)
+    if (data?.length !== 0) {
+      setIsBookmarked(true)
+    }
   }, [params.id])
 
   const handleSubmit = useCallback(
@@ -63,9 +63,16 @@ const BlogDetailPage = () => {
         return
       }
 
-      await createFavorite({userId: user.id, blogId: `${params.id}`})
+      if (isBookmarked) {
+        await deleteFavorite({userId: user.id, blogId: `${params.id}`})
+        setIsBookmarked(false)
+        return
+      }
+
+      await addFavorite({userId: user.id, blogId: `${params.id}`})
+      setIsBookmarked(true)
     },
-    [params.id, user?.id],
+    [isBookmarked, params.id, user?.id],
   )
 
   useEffect(() => {
@@ -109,7 +116,7 @@ const BlogDetailPage = () => {
                   onClick={handleSubmit}
                   className={twMerge('btn-small hover:bg-accent-2')}>
                   <Icon
-                    iconName={'favorite'}
+                    iconName={isBookmarked ? 'favoriteFilled' : 'favorite'}
                     className="fill-accent-5 w-8 h-8"
                   />
                 </Button>
