@@ -3,9 +3,11 @@ import {createBrowserClient} from '@/supabase/client'
 export async function addFavorite({
   userId,
   blogId,
+  blogTitle,
 }: {
   userId: string
   blogId: string
+  blogTitle: string
 }) {
   const supabase = createBrowserClient()
 
@@ -13,6 +15,7 @@ export async function addFavorite({
     const {error} = await supabase.from('favorites').insert({
       user_id: userId,
       post_id: blogId,
+      post_title: blogTitle,
       created_at: new Date().toISOString(),
     })
 

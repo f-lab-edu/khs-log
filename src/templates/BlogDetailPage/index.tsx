@@ -59,7 +59,7 @@ const BlogDetailPage = () => {
     async (event: React.FormEvent) => {
       event.preventDefault()
 
-      if (!user?.id || params.id.length === 0) {
+      if (!user?.id || !blogDetailData?.title || params.id.length === 0) {
         return
       }
 
@@ -69,10 +69,14 @@ const BlogDetailPage = () => {
         return
       }
 
-      await addFavorite({userId: user.id, blogId: `${params.id}`})
+      await addFavorite({
+        userId: user.id,
+        blogId: `${params.id}`,
+        blogTitle: blogDetailData.title,
+      })
       setIsBookmarked(true)
     },
-    [isBookmarked, params.id, user?.id],
+    [blogDetailData?.title, isBookmarked, params.id, user?.id],
   )
 
   useEffect(() => {
@@ -117,7 +121,7 @@ const BlogDetailPage = () => {
                   className={twMerge('btn-small hover:bg-accent-2')}>
                   <Icon
                     iconName={isBookmarked ? 'favoriteFilled' : 'favorite'}
-                    className="fill-accent-5 w-8 h-8"
+                    className="fill-accent-6 w-8 h-8"
                   />
                 </Button>
               </div>
