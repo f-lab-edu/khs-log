@@ -5,7 +5,9 @@ import {useParams} from 'next/navigation'
 import React, {Suspense, useCallback, useEffect, useState} from 'react'
 import {remark} from 'remark'
 import html from 'remark-html'
+import {twMerge} from 'tailwind-merge'
 
+import Button from '@/components/Button'
 import Icon from '@/components/Icon'
 import Image from '@/components/Image'
 import Layout from '@/components/Layout'
@@ -68,7 +70,14 @@ const BlogDetailPage = () => {
                   text={blogDetailData.title}
                   className="mt-4 h3 leading-[4rem] 2xl:mb-2 2xl:h4 font-black"
                 />
-                <Icon iconName={'favorite'} className="fill-accent-5 w-8 h-8" />
+                <Button
+                  type="submit"
+                  className={twMerge('btn-small hover:bg-accent-2')}>
+                  <Icon
+                    iconName={'favorite'}
+                    className="fill-accent-5 w-8 h-8"
+                  />
+                </Button>
               </div>
               <MarkdownView
                 content={htmlContent}
