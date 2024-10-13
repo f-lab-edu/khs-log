@@ -3,11 +3,11 @@ import {useParams, usePathname} from 'next/navigation'
 import {useCallback, useEffect, useState} from 'react'
 
 import {createComment} from '@/app/api/createComment'
+import {deleteComment} from '@/app/api/deleteComment'
 import LeftSideBar from '@/components/LeftSideBar'
 import RightCommentBar from '@/components/RightCommentBar'
 import {useUser} from '@/store/user'
 import {type Database} from '@/supabase/database.types'
-import {deleteComment} from '@/app/api/deleteComment'
 
 interface Props {
   children: React.ReactNode
@@ -69,15 +69,25 @@ const Layout = ({children, isMainView = false}: Props) => {
       userId: string
       content: string
     }) => {
-      await createComment({
+      const newComment = await createComment({
         username,
         userId,
         blogId: `${params.id}`,
         content,
         role: user?.role ?? '',
       })
+
+      if (!newComment) {
+        return
+      }
+
+      if (isBlogDetailPage) {
+        setBlogCommentData(prevData => [...prevData, newComment])
+      } else {
+        setCommentsData(prevData => [...prevData, newComment])
+      }
     },
-    [params.id],
+    [isBlogDetailPage, params.id, user?.role],
   )
 
   const handleDeleteComment = useCallback(
@@ -102,7 +112,7 @@ const Layout = ({children, isMainView = false}: Props) => {
         )
       }
     },
-    [params.id],
+    [isBlogDetailPage],
   )
 
   useEffect(() => {
