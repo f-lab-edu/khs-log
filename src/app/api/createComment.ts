@@ -5,11 +5,13 @@ export async function createComment({
   userId,
   blogId,
   content,
+  role
 }: {
   username: string
   userId: string
   blogId: string
   content: string
+  role:string
 }) {
   const supabase = createBrowserClient()
 
@@ -21,6 +23,7 @@ export async function createComment({
       content,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
+      user_role: role
     })
 
     if (error) {

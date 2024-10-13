@@ -20,6 +20,15 @@ interface Props {
     userId: string
     content: string
   }) => Promise<void>
+  deleteComment: ({
+    userId,
+    commentId,
+    role,
+  }: {
+    userId: string
+    commentId: string
+    role?: string
+  }) => Promise<void>
   isBlogDetailPage?: boolean
 }
 
@@ -28,6 +37,7 @@ const RightCommentBar = ({
   user,
   className,
   createComment,
+  deleteComment,
   isBlogDetailPage = true,
 }: Props) => {
   const handleInput = useCallback(
@@ -43,6 +53,34 @@ const RightCommentBar = ({
     [createComment, user?.id, user?.nickname],
   )
 
+  const renderCommentBox = (data: {
+    content: string
+    created_at: string
+    id: string
+    post_id: string | null
+    updated_at: string | null
+    user_id: string | null
+    username: string
+    user_role: string
+  }) => {
+    const handleDelete = () => {
+      deleteComment?.({
+        userId: user?.id ?? '',
+        commentId: data.id ?? '',
+        role: user?.role ?? '',
+      })
+    }
+
+    return (
+      <CommentBox
+        key={`${data.id}`}
+        item={data}
+        isDisabled={isBlogDetailPage}
+        onClickPositiveButton={handleDelete}
+      />
+    )
+  }
+
   return (
     <div
       className={twMerge(
@@ -56,15 +94,7 @@ const RightCommentBar = ({
         </div>
       </div>
       <div className="grow overflow-y-auto scroll-smooth items-center px-6 md:px-3">
-        {data?.map(data => {
-          return (
-            <CommentBox
-              key={`${data.id}`}
-              item={data}
-              isDisabled={isBlogDetailPage}
-            />
-          )
-        })}
+        {data?.map(data => renderCommentBox(data))}
       </div>
       {isBlogDetailPage && (
         <div className="absolute left-0 right-0 bottom-0 p-6">

@@ -7,6 +7,7 @@ import LeftSideBar from '@/components/LeftSideBar'
 import RightCommentBar from '@/components/RightCommentBar'
 import {useUser} from '@/store/user'
 import {type Database} from '@/supabase/database.types'
+import {deleteComment} from '@/app/api/deleteComment'
 
 interface Props {
   children: React.ReactNode
@@ -68,7 +69,28 @@ const Layout = ({children, isMainView = false}: Props) => {
       userId: string
       content: string
     }) => {
-      await createComment({username, userId, blogId: `${params.id}`, content})
+      await createComment({
+        username,
+        userId,
+        blogId: `${params.id}`,
+        content,
+        role: user?.role ?? '',
+      })
+    },
+    [params.id],
+  )
+
+  const handleDeleteComment = useCallback(
+    async ({
+      userId,
+      commentId,
+      role,
+    }: {
+      userId: string
+      commentId: string
+      role?: string
+    }) => {
+      await deleteComment({userId, commentId, role})
     },
     [params.id],
   )
@@ -111,6 +133,7 @@ const Layout = ({children, isMainView = false}: Props) => {
                   user={user}
                   className={`${!isSideBarVisible && 'md:translate-x-64 md:before:absolute md:before:z-30 md:before:inset-0'}`}
                   createComment={handleCreateComment}
+                  deleteComment={handleDeleteComment}
                   isBlogDetailPage={isBlogDetailPage}
                 />
               ))}

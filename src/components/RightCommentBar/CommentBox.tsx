@@ -12,7 +12,7 @@ interface Props {
   isTooltipVisible?: boolean
   item: Database['public']['Tables']['comments']['Row']
   onClickPositiveButton?: () => void
-  onClickNegativeButton?: () => void
+  onClickNegativeButton?: () => void | Promise<void>
 }
 
 const CommentBox = ({
@@ -25,7 +25,8 @@ const CommentBox = ({
 
   const [isTooltipVisible, setIsTooltipVisible] = useState(false)
 
-  const isDeleteButtonVisible = user?.id === item.user_id
+  const isDeleteButtonVisible =
+    user?.id === item.user_id || user?.role === 'admin'
 
   const handlePositiveButton = useCallback(() => {
     onClickPositiveButton?.()
