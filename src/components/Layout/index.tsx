@@ -91,6 +91,16 @@ const Layout = ({children, isMainView = false}: Props) => {
       role?: string
     }) => {
       await deleteComment({userId, commentId, role})
+
+      if (isBlogDetailPage) {
+        setBlogCommentData(prevData =>
+          prevData.filter(comment => comment.id !== commentId),
+        )
+      } else {
+        setCommentsData(prevData =>
+          prevData.filter(comment => comment.id !== commentId),
+        )
+      }
     },
     [params.id],
   )
