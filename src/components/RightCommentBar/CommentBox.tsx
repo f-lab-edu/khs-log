@@ -2,7 +2,7 @@ import Link from 'next/link'
 import {useCallback, useState} from 'react'
 
 import Button from '@/components/Button'
-import Icon from '@/components/Icon'
+import IconButton from '@/components/IconButton'
 import TooltipModal from '@/components/TooltipModal'
 import {useUser} from '@/store/user'
 import {type Database} from '@/supabase/database.types'
@@ -62,12 +62,12 @@ const CommentBox = ({
         </Link>
         {isDeleteButtonVisible && (
           <>
-            <div onClick={handleTooltipVisible}>
-              <Icon
-                iconName="delete"
-                className="cursor-pointer fill-accent-1"
-              />
-            </div>
+            <IconButton
+              onClick={handleTooltipVisible}
+              iconName="delete"
+              iconClassName="cursor-pointer fill-accent-1"
+              buttonClassName="bg-transparent hover:bg-accent-1/25"
+            />
             <TooltipModal
               isModalVisible={isTooltipVisible}
               title="댓글을 삭제하시겠습니까?">
