@@ -28,6 +28,10 @@ const CommentBox = ({
   const isDeleteButtonVisible =
     user?.id === item.user_id || user?.role === 'admin'
 
+  const handleTooltipVisible = useCallback(() => {
+    setIsTooltipVisible(!isTooltipVisible)
+  }, [isTooltipVisible])
+
   const handlePositiveButton = useCallback(() => {
     onClickPositiveButton?.()
     setIsTooltipVisible(false)
@@ -58,7 +62,7 @@ const CommentBox = ({
         </Link>
         {isDeleteButtonVisible && (
           <>
-            <div onClick={() => setIsTooltipVisible(!isTooltipVisible)}>
+            <div onClick={handleTooltipVisible}>
               <Icon
                 iconName="delete"
                 className="cursor-pointer fill-accent-1"
