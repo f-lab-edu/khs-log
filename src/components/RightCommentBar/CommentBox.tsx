@@ -4,6 +4,7 @@ import {useCallback, useState} from 'react'
 import Button from '@/components/Button'
 import IconButton from '@/components/IconButton'
 import TooltipModal from '@/components/TooltipModal'
+import Typography from '@/components/Typography'
 import {useUser} from '@/store/user'
 import {type Database} from '@/supabase/database.types'
 
@@ -71,8 +72,12 @@ const CommentBox = ({
             <TooltipModal
               isModalVisible={isTooltipVisible}
               title="댓글을 삭제하시겠습니까?">
-              <Button buttonName="예" onClick={handlePositiveButton} />
-              <Button buttonName="아니오" onClick={handleNegativeButton} />
+              <Button onClick={handlePositiveButton}>
+                <Typography text="예" />
+              </Button>
+              <Button onClick={handleNegativeButton}>
+                <Typography text="아니오" />
+              </Button>
             </TooltipModal>
           </>
         )}
