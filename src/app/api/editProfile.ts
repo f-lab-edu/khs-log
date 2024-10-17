@@ -12,8 +12,14 @@ export async function editProfile({
   contents: string
   mainTitle: string
   subTitle: string
-  skills: string[]
-  tools: string[]
+  skills: {
+    name: string
+    bg: string
+  }[]
+  tools: {
+    name: string
+    bg: string
+  }[]
 }) {
   const supabase = createBrowserClient()
 

@@ -50,25 +50,57 @@ const EditProfilePage = () => {
   }, [])
 
   const handleCreateProfile = useCallback(async () => {
-    await createProfile({
+    const data = await createProfile({
       role: user?.role ?? '',
       contents: content,
       mainTitle: mainTitle,
       subTitle: subTitle,
-      skills: ['github', 'googleAnalytics', 'firebase', 'figma'],
-      tools: ['javascript', 'react', 'nextjs', 'graphql'],
+      skills: [
+        {name: 'javascript', bg: 'bg-accent-6'},
+        {name: 'react', bg: 'bg-accent-7'},
+        {name: 'nextjs', bg: 'bg-n-2'},
+        {name: 'graphql', bg: 'bg-accent-8'},
+      ],
+      tools: [
+        {name: 'github', bg: 'bg-n-2'},
+        {name: 'googleAnalytics', bg: 'bg-accent-9'},
+        {name: 'firebase', bg: 'bg-accent-10'},
+        {name: 'figma', bg: 'bg-accent-11'},
+      ],
     })
+
+    if (!data) {
+      return
+    }
+
+    setProfileData(data)
   }, [content, mainTitle, subTitle, user?.role])
 
   const handleEditProfile = useCallback(async () => {
-    await editProfile({
+    const data = await editProfile({
       role: user?.role ?? '',
       contents: content,
       mainTitle: mainTitle,
       subTitle: subTitle,
-      skills: ['javascript', 'react', 'nextjs', 'graphql'],
-      tools: ['github', 'googleAnalytics', 'firebase', 'figma'],
+      skills: [
+        {name: 'javascript', bg: 'bg-accent-6'},
+        {name: 'react', bg: 'bg-accent-7'},
+        {name: 'nextjs', bg: 'bg-n-2'},
+        {name: 'graphql', bg: 'bg-accent-8'},
+      ],
+      tools: [
+        {name: 'github', bg: 'bg-n-2'},
+        {name: 'googleAnalytics', bg: 'bg-accent-9'},
+        {name: 'firebase', bg: 'bg-accent-10'},
+        {name: 'figma', bg: 'bg-accent-11'},
+      ],
     })
+
+    if (!data) {
+      return
+    }
+
+    setProfileData(data)
   }, [content, mainTitle, subTitle, user?.role])
 
   useEffect(() => {
@@ -90,6 +122,7 @@ const EditProfilePage = () => {
           <div className="flex justify-end items-center h-18">
             <Link href="/">
               <Button
+                type="submit"
                 onClick={profileData ? handleEditProfile : handleCreateProfile}
                 className="border border-gray-300">
                 <Typography text="홈 수정" className="base2" />
