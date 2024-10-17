@@ -11,20 +11,25 @@ import Input from '@/components/Input'
 import Layout from '@/components/Layout'
 import Textarea from '@/components/Textarea'
 import Typography from '@/components/Typography'
+import {useUser} from '@/store/user'
 import {type Database} from '@/supabase/database.types'
 
 import type React from 'react'
 
 const EditProfilePage = () => {
+  const user = useUser(state => state.user)
+
   const [profileData, setProfileData] =
     useState<Database['public']['Tables']['profile']['Row']>()
 
-  const [title, setTitle] = useState(profileData?.mainTitle ?? '')
+  const [mainTitle, setMainTitle] = useState(profileData?.mainTitle ?? '')
   const [subTitle, setSubTitle] = useState(profileData?.subTitle ?? '')
   const [content, setContent] = useState(profileData?.contents ?? '')
 
-  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value)
+  const handleMainTitleChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setMainTitle(event.target.value)
   }
 
   const handleSubTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,25 +51,25 @@ const EditProfilePage = () => {
 
   const handleCreateProfile = useCallback(async () => {
     await createProfile({
-      role: 'admin',
-      contents: 'createContents',
-      mainTitle: 'createTitle',
-      subTitle: 'createSubTitle',
+      role: user?.role ?? '',
+      contents: content,
+      mainTitle: mainTitle,
+      subTitle: subTitle,
       skills: ['github', 'googleAnalytics', 'firebase', 'figma'],
       tools: ['javascript', 'react', 'nextjs', 'graphql'],
     })
-  }, [])
+  }, [content, mainTitle, subTitle, user?.role])
 
   const handleEditProfile = useCallback(async () => {
     await editProfile({
-      role: 'admin',
-      contents: 'editContents',
-      mainTitle: 'editTitle',
-      subTitle: 'editSubTitle',
+      role: user?.role ?? '',
+      contents: content,
+      mainTitle: mainTitle,
+      subTitle: subTitle,
       skills: ['javascript', 'react', 'nextjs', 'graphql'],
       tools: ['github', 'googleAnalytics', 'firebase', 'figma'],
     })
-  }, [])
+  }, [content, mainTitle, subTitle, user?.role])
 
   useEffect(() => {
     void fetchProfileData()
@@ -72,7 +77,7 @@ const EditProfilePage = () => {
 
   useEffect(() => {
     if (profileData) {
-      setTitle(profileData.mainTitle ?? '')
+      setMainTitle(profileData.mainTitle ?? '')
       setSubTitle(profileData.subTitle ?? '')
       setContent(profileData.contents ?? '')
     }
@@ -94,8 +99,8 @@ const EditProfilePage = () => {
           <div className="mb-4">
             <h2 className="text-xl font-bold mb-2">제목</h2>
             <Input
-              value={title}
-              onChange={handleTitleChange}
+              value={mainTitle}
+              onChange={handleMainTitleChange}
               className={
                 'w-full p-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500'
               }
