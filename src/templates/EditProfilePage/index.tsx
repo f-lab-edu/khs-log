@@ -14,7 +14,19 @@ import Typography from '@/components/Typography'
 import {useUser} from '@/store/user'
 import {type Database} from '@/supabase/database.types'
 
-import type React from 'react'
+const SKILLS = [
+  {name: 'javascript', bg: 'bg-accent-6'},
+  {name: 'react', bg: 'bg-accent-7'},
+  {name: 'nextjs', bg: 'bg-n-2'},
+  {name: 'graphql', bg: 'bg-accent-8'},
+]
+
+const TOOLS = [
+  {name: 'github', bg: 'bg-n-2'},
+  {name: 'googleAnalytics', bg: 'bg-accent-9'},
+  {name: 'firebase', bg: 'bg-accent-10'},
+  {name: 'figma', bg: 'bg-accent-11'},
+]
 
 const EditProfilePage = () => {
   const user = useUser(state => state.user)
@@ -22,86 +34,45 @@ const EditProfilePage = () => {
   const [profileData, setProfileData] =
     useState<Database['public']['Tables']['profile']['Row']>()
 
-  const [mainTitle, setMainTitle] = useState(profileData?.mainTitle ?? '')
-  const [subTitle, setSubTitle] = useState(profileData?.subTitle ?? '')
-  const [content, setContent] = useState(profileData?.contents ?? '')
+  const [mainTitle, setMainTitle] = useState('')
+  const [subTitle, setSubTitle] = useState('')
+  const [content, setContent] = useState('')
 
-  const handleMainTitleChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setMainTitle(event.target.value)
-  }
-
-  const handleSubTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSubTitle(event.target.value)
-  }
-
-  const handleContentChange = (
-    event: React.ChangeEvent<HTMLTextAreaElement>,
-  ) => {
-    setContent(event.target.value)
-  }
+  const handleChange =
+    (setter: React.Dispatch<React.SetStateAction<string>>) =>
+    (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setter(event.target.value)
+    }
 
   const fetchProfileData = useCallback(async () => {
-    const res = await axios(`/api/EditProfile`)
-    const data = await res.data.profileData[0]
-
-    setProfileData(data)
+    try {
+      const res = await axios(`/api/EditProfile`)
+      const data = await res.data.profileData[0]
+      setProfileData(data)
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error fetching profile data:', error)
+    }
   }, [])
 
-  const handleCreateProfile = useCallback(async () => {
-    const data = await createProfile({
+  const handleSaveProfile = useCallback(async () => {
+    const profilePayload = {
       role: user?.role ?? '',
       contents: content,
       mainTitle: mainTitle,
       subTitle: subTitle,
-      skills: [
-        {name: 'javascript', bg: 'bg-accent-6'},
-        {name: 'react', bg: 'bg-accent-7'},
-        {name: 'nextjs', bg: 'bg-n-2'},
-        {name: 'graphql', bg: 'bg-accent-8'},
-      ],
-      tools: [
-        {name: 'github', bg: 'bg-n-2'},
-        {name: 'googleAnalytics', bg: 'bg-accent-9'},
-        {name: 'firebase', bg: 'bg-accent-10'},
-        {name: 'figma', bg: 'bg-accent-11'},
-      ],
-    })
-
-    if (!data) {
-      return
+      skills: SKILLS,
+      tools: TOOLS,
     }
 
-    setProfileData(data)
-  }, [content, mainTitle, subTitle, user?.role])
+    const data = profileData
+      ? await editProfile(profilePayload)
+      : await createProfile(profilePayload)
 
-  const handleEditProfile = useCallback(async () => {
-    const data = await editProfile({
-      role: user?.role ?? '',
-      contents: content,
-      mainTitle: mainTitle,
-      subTitle: subTitle,
-      skills: [
-        {name: 'javascript', bg: 'bg-accent-6'},
-        {name: 'react', bg: 'bg-accent-7'},
-        {name: 'nextjs', bg: 'bg-n-2'},
-        {name: 'graphql', bg: 'bg-accent-8'},
-      ],
-      tools: [
-        {name: 'github', bg: 'bg-n-2'},
-        {name: 'googleAnalytics', bg: 'bg-accent-9'},
-        {name: 'firebase', bg: 'bg-accent-10'},
-        {name: 'figma', bg: 'bg-accent-11'},
-      ],
-    })
-
-    if (!data) {
-      return
+    if (data) {
+      setProfileData(data)
     }
-
-    setProfileData(data)
-  }, [content, mainTitle, subTitle, user?.role])
+  }, [content, mainTitle, profileData, subTitle, user?.role])
 
   useEffect(() => {
     void fetchProfileData()
@@ -123,7 +94,7 @@ const EditProfilePage = () => {
             <Link href="/">
               <Button
                 type="submit"
-                onClick={profileData ? handleEditProfile : handleCreateProfile}
+                onClick={handleSaveProfile}
                 className="border border-gray-300">
                 <Typography text="홈 수정" className="base2" />
               </Button>
@@ -133,7 +104,7 @@ const EditProfilePage = () => {
             <h2 className="text-xl font-bold mb-2">제목</h2>
             <Input
               value={mainTitle}
-              onChange={handleMainTitleChange}
+              onChange={handleChange(setMainTitle)}
               className={
                 'w-full p-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500'
               }
@@ -143,7 +114,7 @@ const EditProfilePage = () => {
             <h2 className="text-xl font-bold mb-2">부제목</h2>
             <Input
               value={subTitle}
-              onChange={handleSubTitleChange}
+              onChange={handleChange(setSubTitle)}
               className={
                 'w-full p-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500'
               }
@@ -153,7 +124,7 @@ const EditProfilePage = () => {
             <h2 className="text-xl font-bold mb-2">내용</h2>
             <Textarea
               value={content}
-              onChange={handleContentChange}
+              onChange={handleChange(setContent)}
               className="w-full h-48 p-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500"
             />
           </div>
