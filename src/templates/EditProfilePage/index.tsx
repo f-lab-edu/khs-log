@@ -1,7 +1,6 @@
 'use client'
 
 import axios from 'axios'
-import Link from 'next/link'
 import {useCallback, useEffect, useState} from 'react'
 
 import {createProfile} from '@/app/api/createProfile'
@@ -78,8 +77,8 @@ const EditProfilePage = () => {
     if (imageFile) {
       const {data, error} = await supabase.storage
         .from('images')
-        .upload(`public/${imageFile.name}`, imageFile, {
-          cacheControl: '3600',
+        .upload(imageFile.name, imageFile, {
+          cacheControl: '0',
           upsert: true,
         })
 
@@ -92,7 +91,7 @@ const EditProfilePage = () => {
       if (data) {
         const {data} = supabase.storage
           .from('images')
-          .getPublicUrl(`public/${imageFile.name}`)
+          .getPublicUrl(imageFile.name)
         uploadedImageUrl = data.publicUrl || ''
         setImageUrl(uploadedImageUrl)
       }
@@ -144,14 +143,12 @@ const EditProfilePage = () => {
       <Layout isMainView>
         <div className="flex flex-col h-screen p-4">
           <div className="flex justify-end items-center h-18">
-            <Link href="/">
-              <Button
-                type="submit"
-                onClick={handleSaveProfile}
-                className="border border-gray-300">
-                <Typography text="홈 수정" className="base2" />
-              </Button>
-            </Link>
+            <Button
+              type="submit"
+              onClick={handleSaveProfile}
+              className="border border-gray-300">
+              <Typography text="홈 추가/수정" className="base2" />
+            </Button>
           </div>
           <div className="mb-4">
             <h2 className="text-xl font-bold mb-2">제목</h2>

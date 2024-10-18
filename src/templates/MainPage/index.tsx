@@ -2,7 +2,7 @@
 
 import axios from 'axios'
 import Image from 'next/image'
-import React, {useCallback, useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 
 import Icon, {type IconName} from '@/components/Icon'
 import Layout from '@/components/Layout'
@@ -34,23 +34,20 @@ const MainPage = () => {
   const [profileData, setProfileData] =
     useState<Database['public']['Tables']['profile']['Row']>()
 
-  const hasSkills = profileData !== undefined && profileData.skills !== null
-  const hasTools = profileData !== undefined && profileData.tools !== null
-
-  const skillsIcons = profileData?.skills as unknown as IconProps[]
-
-  const toolsIcons = profileData?.tools as unknown as IconProps[]
-
-  const fetchProfileData = useCallback(async () => {
-    const res = await axios(`/api/EditProfile`)
-    const data = await res.data.profileData[0]
-
-    setProfileData(data)
-  }, [])
-
   useEffect(() => {
-    void fetchProfileData()
-  }, [fetchProfileData])
+    async function fetchProfileData() {
+      try {
+        const res = await axios(`/api/EditProfile`)
+        const data = await res.data.profileData[0]
+
+        setProfileData(data)
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Error fetching profile data:', error)
+      }
+    }
+    fetchProfileData()
+  }, [])
 
   return (
     <>
@@ -70,18 +67,30 @@ const MainPage = () => {
               text={profileData?.contents ?? ''}
               className="mt-4 base2 text-n-4 whitespace-pre-line"
             />
-            {hasSkills && <IconRow icons={skillsIcons} title="Skills" />}
-            {hasTools && <IconRow icons={toolsIcons} title="Tools" />}
+            {profileData?.skills && (
+              <IconRow
+                icons={profileData.skills as unknown as IconProps[]}
+                title="Skills"
+              />
+            )}
+            {profileData?.tools && (
+              <IconRow
+                icons={profileData.tools as unknown as IconProps[]}
+                title="Tools"
+              />
+            )}
           </div>
-          <div className="grow">
-            <Image
-              className="w-full h-[500px] object-cover rounded-3xl md:rounded-xl"
-              src="/images/avatar.png"
-              alt="avatar"
-              width={600}
-              height={500}
-            />
-          </div>
+          {profileData?.imageUrl && (
+            <div className="grow">
+              <Image
+                className="w-full h-[500px] object-cover rounded-3xl md:rounded-xl"
+                src={profileData.imageUrl}
+                alt="avatar"
+                width={600}
+                height={500}
+              />
+            </div>
+          )}
         </div>
       </Layout>
     </>

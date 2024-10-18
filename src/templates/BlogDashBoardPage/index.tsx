@@ -38,7 +38,7 @@ const BlogDashBoardPage = () => {
               iconName="blog"
               fill="fill-accent-3"
             />
-            <Typography text="홈 수정" className="base2 " />
+            <Typography text="홈 추가/수정" className="base2 " />
           </>
         </Link>
         {blogsData.length > 0
