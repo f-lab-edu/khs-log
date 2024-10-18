@@ -155,6 +155,7 @@ export type Database = {
         Row: {
           contents: string
           id: string
+          imageUrl: string | null
           mainTitle: string
           role: string
           skills: Json[] | null
@@ -164,6 +165,7 @@ export type Database = {
         Insert: {
           contents: string
           id?: string
+          imageUrl?: string | null
           mainTitle: string
           role: string
           skills?: Json[] | null
@@ -173,6 +175,7 @@ export type Database = {
         Update: {
           contents?: string
           id?: string
+          imageUrl?: string | null
           mainTitle?: string
           role?: string
           skills?: Json[] | null
