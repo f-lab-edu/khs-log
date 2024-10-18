@@ -49,14 +49,14 @@ const Layout = ({children, isMainView = false}: Props) => {
     const res = await axios(`/api/BlogDetail?id=${params.id}`)
     const data = await res.data
 
-    setBlogCommentData(data.comments)
+    setBlogCommentData(data.comments.reverse())
   }, [params.id])
 
   const fetchCommentsData = useCallback(async () => {
     const res = await axios(`/api/Blog`)
     const data = await res.data
 
-    setCommentsData(data.comments)
+    setCommentsData(data.comments.reverse())
   }, [])
 
   const handleCreateComment = useCallback(
@@ -82,9 +82,9 @@ const Layout = ({children, isMainView = false}: Props) => {
       }
 
       if (isBlogDetailPage) {
-        setBlogCommentData(prevData => [...prevData, newComment])
+        setBlogCommentData(prevData => [newComment, ...prevData])
       } else {
-        setCommentsData(prevData => [...prevData, newComment])
+        setCommentsData(prevData => [newComment, ...prevData])
       }
     },
     [isBlogDetailPage, params.id, user?.role],
