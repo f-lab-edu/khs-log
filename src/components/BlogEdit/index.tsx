@@ -29,9 +29,9 @@ const BlogEdit = ({blogData, onClose, refreshBlogs}: Props) => {
   const supabase = createBrowserClient()
 
   const [formData, setFormData] = useState({
-    title: blogData?.title || '',
-    imageUrl: blogData?.titleImageUrl || '',
-    content: blogData?.content || '',
+    title: blogData?.title ?? '',
+    imageUrl: blogData?.titleImageUrl ?? '',
+    content: blogData?.content ?? '',
   })
   const [htmlContent, setHtmlContent] = useState('')
   const [imageFile, setImageFile] = useState<File | null>(null)
@@ -107,10 +107,9 @@ const BlogEdit = ({blogData, onClose, refreshBlogs}: Props) => {
       onClose?.()
 
       return
-    } else {
-      await createBlog({id: user?.id ?? '', ...blogPayload})
-      router.push(`/Blog`)
     }
+    await createBlog({id: user?.id ?? '', ...blogPayload})
+    router.push(`/Blog`)
   }, [
     formData.title,
     formData.content,
@@ -125,7 +124,7 @@ const BlogEdit = ({blogData, onClose, refreshBlogs}: Props) => {
   ])
 
   useEffect(() => {
-    void convertMarkdownToHtml(formData.content)
+    convertMarkdownToHtml(formData.content)
   }, [formData.content, convertMarkdownToHtml])
 
   useEffect(() => {
