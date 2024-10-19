@@ -1,38 +1,52 @@
 'use client'
 
-import Link from 'next/link'
 import {useCallback, useEffect, useState} from 'react'
 import {remark} from 'remark'
 import html from 'remark-html'
 
-import {createBlog} from '@/app/api/createBlog'
+import {editBlog} from '@/app/api/editBlog'
 import Button from '@/components/Button'
+import Image from '@/components/Image'
 import Input from '@/components/Input'
 import MarkdownView from '@/components/MarkdownView'
 import Textarea from '@/components/Textarea'
 import Typography from '@/components/Typography'
 import {useUser} from '@/store/user'
+import {createBrowserClient} from '@/supabase/client'
+import {type Database} from '@/supabase/database.types'
 
-const BlogEdit = () => {
+type Props = {
+  blogData?: Database['public']['Tables']['posts']['Row']
+}
+
+const BlogEdit = ({blogData}: Props) => {
   const user = useUser(state => state.user)
+  const supabase = createBrowserClient()
 
-  const [title, setTitle] = useState('')
-  const [imageUrl, setImageUrl] = useState('')
-  const [content, setContent] = useState('')
+  const [formData, setFormData] = useState({
+    title: blogData?.title || '',
+    imageUrl: blogData?.titleImageUrl || '',
+    content: blogData?.content || '',
+  })
   const [htmlContent, setHtmlContent] = useState('')
+  const [imageFile, setImageFile] = useState<File | null>(null)
 
-  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value)
-  }
-
-  const handleImageUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setImageUrl(event.target.value)
-  }
-
-  const handleContentChange = (
-    event: React.ChangeEvent<HTMLTextAreaElement>,
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    setContent(event.target.value)
+    const {name, value} = event.target
+    setFormData(prev => ({...prev, [name]: value}))
+  }
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0]
+      setImageFile(file)
+
+      // 이미지 미리보기 URL 생성
+      const previewUrl = URL.createObjectURL(file)
+      setFormData(prev => ({...prev, imageUrl: previewUrl}))
+    }
   }
 
   const convertMarkdownToHtml = useCallback(async (markdownBody: string) => {
@@ -40,65 +54,117 @@ const BlogEdit = () => {
     setHtmlContent(processedContent.toString())
   }, [])
 
-  const handleCreate = useCallback(async () => {
-    if (title.length === 0) {
+  const handleEdit = useCallback(async () => {
+    if (formData.title.length === 0) {
       return alert('제목을 입력해주세요.')
     }
 
-    if (content.length === 0) {
+    if (formData.content.length === 0) {
       return alert('내용을 입력해주세요.')
     }
-    await createBlog({id: user?.id ?? '', title, content, imageUrl})
-  }, [content, imageUrl, title, user?.id])
+
+    if (imageFile) {
+      const {data, error} = await supabase.storage
+        .from('images')
+        .upload(imageFile.name, imageFile, {
+          cacheControl: '0',
+          upsert: true,
+        })
+
+      if (error) {
+        // eslint-disable-next-line no-console
+        console.error('Error uploading image:', error)
+        return
+      }
+
+      if (data) {
+        const {data: publicUrlData} = supabase.storage
+          .from('images')
+          .getPublicUrl(imageFile.name)
+
+        setFormData(prev => ({
+          ...prev,
+          imageUrl: publicUrlData.publicUrl || '',
+        }))
+      }
+    }
+
+    await editBlog({id: user?.id ?? '', ...formData})
+  }, [formData, imageFile, supabase.storage, user?.id])
 
   useEffect(() => {
-    void convertMarkdownToHtml(content)
-  }, [content, convertMarkdownToHtml])
+    void convertMarkdownToHtml(formData.content)
+  }, [formData.content, convertMarkdownToHtml])
+
+  useEffect(() => {
+    if (blogData) {
+      setFormData({
+        title: blogData.title,
+        imageUrl: blogData.titleImageUrl,
+        content: blogData.content,
+      })
+    }
+  }, [blogData])
 
   return (
-    <div className="flex flex-col h-screen p-4">
+    <div className="flex flex-col h-full p-4 overflow-auto">
       <div className="flex justify-end items-center h-18">
-        <Link href="/Blog">
-          <Button onClick={handleCreate} className="border border-gray-300">
-            <Typography text="게시글 등록" className="base2" />
-          </Button>
-        </Link>
+        <Button onClick={handleEdit} className="border border-gray-300">
+          <Typography text="게시글 등록" className="base2" />
+        </Button>
       </div>
       <div className="mb-4">
         <h2 className="text-xl font-bold mb-2">제목</h2>
         <Input
-          value={title}
+          name="title"
+          value={formData.title}
           placeholder="제목을 입력해주세요."
-          onChange={handleTitleChange}
-          className={
-            'w-full p-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500'
-          }
+          onChange={handleChange}
+          className="w-full p-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500"
         />
       </div>
       <div className="mb-4">
         <h2 className="text-xl font-bold mb-2">메인 이미지</h2>
-        <Input
-          value={imageUrl}
-          placeholder="메인 이미지 URL을 입력해주세요."
-          onChange={handleImageUrlChange}
-          className={
-            'w-full p-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500'
-          }
-        />
+        <div className="flex items-center">
+          <label
+            htmlFor="file-upload"
+            className="border border-gray-300 p-2 rounded-md shadow-sm cursor-pointer hover:bg-gray-100 mr-4">
+            <Typography text="이미지 수정" className="base2" />
+          </label>
+          <input
+            id="file-upload"
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="hidden"
+          />
+          {formData.imageUrl && (
+            <div className="flex justify-center items-center">
+              <Image
+                src={formData.imageUrl}
+                alt="Uploaded"
+                className="max-w-full h-auto rounded-md"
+                width={140}
+                height={115}
+              />
+            </div>
+          )}
+        </div>
       </div>
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col overflow-auto">
         <h2 className="text-xl font-bold mb-2">미리보기</h2>
         <MarkdownView
           content={htmlContent}
-          className="flex-1 overflow-y-auto p-4 border border-gray-300 rounded-md shadow-sm bg-white"
+          className="flex-1 p-4 border border-gray-300 rounded-md shadow-sm bg-white"
         />
       </div>
       <div className="mt-4">
         <h2 className="text-xl font-bold mb-2">내용</h2>
         <Textarea
-          value={content}
+          name="content"
+          value={formData.content}
           placeholder="내용을 입력해주세요."
-          onChange={handleContentChange}
+          onChange={handleChange}
           className="w-full h-48 p-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500"
         />
       </div>

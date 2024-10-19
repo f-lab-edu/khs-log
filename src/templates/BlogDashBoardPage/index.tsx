@@ -19,14 +19,25 @@ const BlogDashBoardPage = () => {
   const [blogsData, setBlogsData] = useState<
     Database['public']['Tables']['posts']['Row'][]
   >([])
+  const [selectedBlog, setSelectedBlog] = useState<
+    Database['public']['Tables']['posts']['Row'] | null
+  >(null)
 
   const handleEditProfile = useCallback(() => {
     setEditProfileVisible(!isEditProfileVisible)
   }, [isEditProfileVisible])
 
-  const handleBlogDetail = useCallback(() => {
-    setBlogDetailVisible(!isBlogDetailVisible)
-  }, [isBlogDetailVisible])
+  const handleBlogDetail = useCallback(
+    (blog: Database['public']['Tables']['posts']['Row']) => {
+      setSelectedBlog(blog)
+      setBlogDetailVisible(true)
+    },
+    [],
+  )
+
+  const closeBlogDetailModal = useCallback(() => {
+    setBlogDetailVisible(false)
+  }, [])
 
   const fetchBlogsData = useCallback(async () => {
     const res = await axios(`/api/BlogDashBoard`)
@@ -60,7 +71,7 @@ const BlogDashBoardPage = () => {
                 key={`${data.id}`}
                 className="flex justify-between items-center">
                 <BlogList
-                  onClick={handleBlogDetail}
+                  onClick={() => handleBlogDetail(data)}
                   title={data.title}
                   isAdmin
                 />
@@ -78,12 +89,14 @@ const BlogDashBoardPage = () => {
         onClose={handleEditProfile}>
         <EditProfile />
       </Modal>
-      <Modal
-        classWrap="max-w-[48rem] md:min-h-screen-ios md:rounded-none"
-        visible={isBlogDetailVisible}
-        onClose={handleBlogDetail}>
-        <BlogEdit />
-      </Modal>
+      {selectedBlog && (
+        <Modal
+          classWrap="max-w-[48rem] md:min-h-screen-ios md:rounded-none"
+          visible={isBlogDetailVisible}
+          onClose={closeBlogDetailModal}>
+          {selectedBlog && <BlogEdit blogData={selectedBlog} />}
+        </Modal>
+      )}
     </>
   )
 }
