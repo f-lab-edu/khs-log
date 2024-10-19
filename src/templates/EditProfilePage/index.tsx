@@ -50,7 +50,7 @@ const EditProfilePage = () => {
 
   // 이미지 파일이 변경될 때 실행되는 함수
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
+    if (event.target.files) {
       const file = event.target.files[0]
       setImageFile(file)
 
