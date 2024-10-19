@@ -121,14 +121,14 @@ const BlogDashBoardPage = () => {
       </Layout>
       <Modal
         classWrap="max-w-[48rem] md:min-h-screen-ios md:rounded-none"
-        visible={isEditProfileVisible}
+        isVisible={isEditProfileVisible}
         onClose={handleEditProfile}>
         <EditProfile />
       </Modal>
       {selectedBlog && (
         <Modal
           classWrap="max-w-[48rem] md:min-h-screen-ios md:rounded-none"
-          visible={isBlogDetailVisible}
+          isVisible={isBlogDetailVisible}
           onClose={closeBlogDetailModal}>
           {selectedBlog && (
             <BlogEdit
