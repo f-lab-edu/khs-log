@@ -1,19 +1,32 @@
 'use client'
 
 import axios from 'axios'
-import Link from 'next/link'
 import React, {useCallback, useEffect, useState} from 'react'
 
+import BlogEdit from '@/components/BlogEdit'
 import BlogList from '@/components/BlogList'
+import Button from '@/components/Button'
+import EditProfile from '@/components/EditProfile'
 import Icon from '@/components/Icon'
 import Layout from '@/components/Layout'
+import Modal from '@/components/Modal'
 import Typography from '@/components/Typography'
 import {type Database} from '@/supabase/database.types'
 
 const BlogDashBoardPage = () => {
+  const [isEditProfileVisible, setEditProfileVisible] = useState(false)
+  const [isBlogDetailVisible, setBlogDetailVisible] = useState(false)
   const [blogsData, setBlogsData] = useState<
     Database['public']['Tables']['posts']['Row'][]
   >([])
+
+  const handleEditProfile = useCallback(() => {
+    setEditProfileVisible(!isEditProfileVisible)
+  }, [isEditProfileVisible])
+
+  const handleBlogDetail = useCallback(() => {
+    setBlogDetailVisible(!isBlogDetailVisible)
+  }, [isBlogDetailVisible])
 
   const fetchBlogsData = useCallback(async () => {
     const res = await axios(`/api/BlogDashBoard`)
@@ -29,9 +42,9 @@ const BlogDashBoardPage = () => {
   return (
     <>
       <Layout>
-        <Link
-          className="group w-1/2 h-15 flex justify-center items-center m-3 p-3.5 border border-n-3 rounded-xl h6 transition-all hover:border-transparent hover:shadow-[0_0_1rem_0.25rem_rgba(0,0,0,0.04),0px_2rem_1.5rem_-1rem_rgba(0,0,0,0.12)] last:mb-0 2xl:p-2.5 lg:p-3.5"
-          href="/EditProfile">
+        <Button
+          onClick={handleEditProfile}
+          className="group w-1/2 h-15 flex justify-center items-center m-3 p-3.5 border border-n-3 rounded-xl h6 transition-all hover:border-transparent hover:shadow-[0_0_1rem_0.25rem_rgba(0,0,0,0.04),0px_2rem_1.5rem_-1rem_rgba(0,0,0,0.12)] last:mb-0 2xl:p-2.5 lg:p-3.5">
           <>
             <Icon
               className="relative z-1"
@@ -40,14 +53,14 @@ const BlogDashBoardPage = () => {
             />
             <Typography text="홈 추가/수정" className="base2 " />
           </>
-        </Link>
+        </Button>
         {blogsData.length > 0
           ? blogsData.map(data => (
               <div
                 key={`${data.id}`}
                 className="flex justify-between items-center">
                 <BlogList
-                  url={`/BlogDetail/${data.id}`}
+                  onClick={handleBlogDetail}
                   title={data.title}
                   isAdmin
                 />
@@ -59,6 +72,18 @@ const BlogDashBoardPage = () => {
             ))
           : null}
       </Layout>
+      <Modal
+        classWrap="max-w-[48rem] md:min-h-screen-ios md:rounded-none"
+        visible={isEditProfileVisible}
+        onClose={handleEditProfile}>
+        <EditProfile />
+      </Modal>
+      <Modal
+        classWrap="max-w-[48rem] md:min-h-screen-ios md:rounded-none"
+        visible={isBlogDetailVisible}
+        onClose={handleBlogDetail}>
+        <BlogEdit />
+      </Modal>
     </>
   )
 }
