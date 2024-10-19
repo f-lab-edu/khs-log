@@ -39,7 +39,7 @@ const FavoritePage = () => {
   }, [fetchFavoritesData])
 
   return (
-    <>
+    <div>
       <Layout>
         {favoritesData.length > 0
           ? favoritesData.map(data => (
@@ -54,7 +54,7 @@ const FavoritePage = () => {
             ))
           : null}
       </Layout>
-    </>
+    </div>
   )
 }
 

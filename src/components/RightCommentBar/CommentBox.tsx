@@ -51,7 +51,7 @@ const CommentBox = ({
   }, [onClickNegativeButton])
 
   return (
-    <>
+    <div>
       <div className="relative flex flex-row justify-between items-center">
         <Link
           className={`block mt-2 ${isDisabled && 'cursor-default'}`}
@@ -69,7 +69,7 @@ const CommentBox = ({
           </div>
         </Link>
         {isDeleteButtonVisible && (
-          <>
+          <div>
             <IconButton
               onClick={handleTooltipVisible}
               iconName="delete"
@@ -86,10 +86,10 @@ const CommentBox = ({
                 <Typography text="아니오" />
               </Button>
             </TooltipModal>
-          </>
+          </div>
         )}
       </div>
-    </>
+    </div>
   )
 }
 

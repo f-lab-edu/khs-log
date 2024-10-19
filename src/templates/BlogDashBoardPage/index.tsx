@@ -76,19 +76,19 @@ const BlogDashBoardPage = () => {
   }, [fetchBlogsData])
 
   return (
-    <>
+    <div>
       <Layout>
         <Button
           onClick={handleEditProfile}
           className="group w-1/2 h-15 flex justify-center items-center m-3 p-3.5 border border-n-3 rounded-xl h6 transition-all hover:border-transparent hover:shadow-[0_0_1rem_0.25rem_rgba(0,0,0,0.04),0px_2rem_1.5rem_-1rem_rgba(0,0,0,0.12)] last:mb-0 2xl:p-2.5 lg:p-3.5">
-          <>
+          <div>
             <Icon
               className="relative z-1"
               iconName="blog"
               fill="fill-accent-3"
             />
             <Typography text="홈 추가/수정" className="base2 " />
-          </>
+          </div>
         </Button>
         {blogsData.length > 0
           ? blogsData.map(data => (
@@ -139,7 +139,7 @@ const BlogDashBoardPage = () => {
           )}
         </Modal>
       )}
-    </>
+    </div>
   )
 }
 

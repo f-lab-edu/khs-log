@@ -114,7 +114,7 @@ const BlogPage = () => {
   }, [])
 
   return (
-    <>
+    <div>
       <Layout>
         <div className="grid grid-cols-1 gap-y-6 md:grid-cols-2 md:gap-x-8">
           {blogsData.map((data, index) => (
@@ -130,7 +130,7 @@ const BlogPage = () => {
         <div ref={observerRef} className="h-10" /> {/* 감지할 빈 요소 */}
         {isLoading && <div>Loading...</div>} {/* 로딩 상태 표시 */}
       </Layout>
-    </>
+    </div>
   )
 }
 

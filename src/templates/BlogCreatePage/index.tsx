@@ -7,11 +7,11 @@ import Layout from '@/components/Layout'
 
 const BlogCreatePage = () => {
   return (
-    <>
+    <div>
       <Layout isMainView>
         <BlogEdit />
       </Layout>
-    </>
+    </div>
   )
 }
 
