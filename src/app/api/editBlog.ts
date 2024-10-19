@@ -14,6 +14,7 @@ export async function editBlog({
   const supabase = createBrowserClient()
 
   try {
+    // 블로그 글 수정
     const {data, error} = await supabase
       .from('posts')
       .update({
@@ -22,15 +23,18 @@ export async function editBlog({
         titleImageUrl: imageUrl,
         updated_at: new Date().toISOString(),
       })
-      .eq('author_id', id)
+      .eq('id', id) // 여기서 id를 사용하여 정확한 포스트를 선택
       .select('*')
 
     if (error) {
-      return alert('권한이 없습니다.')
+      // eslint-disable-next-line no-console
+      console.error('Error updating blog:', error)
+      return alert('수정 권한이 없거나 오류가 발생했습니다.')
     }
+
     return data
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.log(error)
+    console.log('Unexpected error:', error)
   }
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import {useRouter} from 'next/navigation'
 import {useCallback, useEffect, useState} from 'react'
 import {remark} from 'remark'
 import html from 'remark-html'
@@ -18,9 +19,12 @@ import {type Database} from '@/supabase/database.types'
 
 type Props = {
   blogData?: Database['public']['Tables']['posts']['Row']
+  onClose?: () => void
+  refreshBlogs?: () => void
 }
 
-const BlogEdit = ({blogData}: Props) => {
+const BlogEdit = ({blogData, onClose, refreshBlogs}: Props) => {
+  const router = useRouter()
   const user = useUser(state => state.user)
   const supabase = createBrowserClient()
 
@@ -64,6 +68,9 @@ const BlogEdit = ({blogData}: Props) => {
       return alert('내용을 입력해주세요.')
     }
 
+    let updatedImageUrl = formData.imageUrl
+
+    // 이미지 파일이 있는 경우 업로드하고 URL을 얻어옵니다.
     if (imageFile) {
       const {data, error} = await supabase.storage
         .from('images')
@@ -83,18 +90,39 @@ const BlogEdit = ({blogData}: Props) => {
           .from('images')
           .getPublicUrl(imageFile.name)
 
-        setFormData(prev => ({
-          ...prev,
-          imageUrl: publicUrlData.publicUrl || '',
-        }))
+        updatedImageUrl = publicUrlData.publicUrl || ''
       }
     }
 
-    if (blogData) {
-      await editBlog({id: user?.id ?? '', ...formData})
+    // 이미지 URL이 업데이트된 후에 블로그를 생성/수정합니다.
+    const blogPayload = {
+      title: formData.title,
+      content: formData.content,
+      imageUrl: updatedImageUrl,
     }
-    await createBlog({id: user?.id ?? '', ...formData})
-  }, [blogData, formData, imageFile, supabase.storage, user?.id])
+
+    if (blogData) {
+      await editBlog({id: blogData.id, ...blogPayload})
+      refreshBlogs?.()
+      onClose?.()
+
+      return
+    } else {
+      await createBlog({id: user?.id ?? '', ...blogPayload})
+      router.push(`/Blog`)
+    }
+  }, [
+    formData.title,
+    formData.content,
+    formData.imageUrl,
+    imageFile,
+    user?.id,
+    blogData,
+    onClose,
+    refreshBlogs,
+    supabase.storage,
+    router,
+  ])
 
   useEffect(() => {
     void convertMarkdownToHtml(formData.content)
