@@ -49,14 +49,14 @@ const Layout = ({children, isMainView = false}: Props) => {
     const res = await axios(`/api/BlogDetail?id=${params.id}`)
     const data = await res.data
 
-    setBlogCommentData(data.comments.reverse())
+    setBlogCommentData(data.comments)
   }, [params.id])
 
   const fetchCommentsData = useCallback(async () => {
     const res = await axios(`/api/Blog`)
     const data = await res.data
 
-    setCommentsData(data.comments.reverse())
+    setCommentsData(data.comments)
   }, [])
 
   const handleCreateComment = useCallback(

@@ -126,7 +126,7 @@ const EditProfilePage = () => {
   ])
 
   useEffect(() => {
-    void fetchProfileData()
+    fetchProfileData()
   }, [fetchProfileData])
 
   useEffect(() => {
