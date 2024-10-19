@@ -18,76 +18,69 @@ const BlogPage = () => {
   >([])
   const [isLoading, setIsLoading] = useState(false) // 로딩 상태
   const [hasMore, setHasMore] = useState(true) // 더 불러올 데이터가 있는지 여부
-  const [page, setPage] = useState(1) // 페이지 번호 (초기 로드는 6개이므로 1로 시작)
+  const [page, setPage] = useState(1) // 페이지 번호
 
-  const observerRef = useRef<HTMLDivElement | null>(null) // Observer가 감지할 Ref
+  const observerRef = useRef<HTMLDivElement | null>(null) // Observer 감지용 Ref
 
-  // 첫 6개 데이터를 불러오는 함수
-  const fetchBlogsData = useCallback(async () => {
-    if (isLoading) return // 이미 로딩 중이면 중단
+  // 데이터 로딩 함수 (초기 로딩 및 추가 로딩)
+  const fetchBlogs = useCallback(
+    async (from: number, to: number) => {
+      setIsLoading(true)
+      try {
+        const res = await supabase
+          .from('posts')
+          .select('*')
+          .order('created_at', {ascending: false})
+          .range(from, to)
 
-    setIsLoading(true)
-    try {
-      const res = await supabase
-        .from('posts')
-        .select('*')
-        .order('created_at', {ascending: false})
-        .range(0, INITIAL_PAGE_COUNT - 1) // 처음 6개 데이터를 가져오기
-
-      if (res.data && res.data.length > 0) {
-        setBlogsData(res.data) // 초기 6개 데이터를 blogsData에 설정
-      } else {
-        setHasMore(false) // 데이터가 더 이상 없으면 중단
+        return res.data || []
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Error fetching blogs:', error)
+        return []
+      } finally {
+        setIsLoading(false)
       }
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error fetching initial blogs:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [isLoading, supabase])
+    },
+    [supabase],
+  )
 
-  // 그 이후로 데이터를 2개씩 추가로 불러오는 함수
-  const fetchMoreBlogs = useCallback(async () => {
+  // 초기 데이터를 불러오는 함수
+  const loadInitialBlogs = useCallback(async () => {
+    const initialData = await fetchBlogs(0, INITIAL_PAGE_COUNT - 1)
+    setBlogsData(initialData)
+    if (initialData.length < INITIAL_PAGE_COUNT) {
+      setHasMore(false)
+    }
+  }, [fetchBlogs])
+
+  // 추가 데이터를 불러오는 함수
+  const loadMoreBlogs = useCallback(async () => {
     if (isLoading || !hasMore) return // 이미 로딩 중이거나 더 이상 데이터가 없으면 중단
 
-    setIsLoading(true)
-    try {
-      const from = page * LOAD_MORE_COUNT // 페이지 번호에 따른 시작점
-      const to = from + LOAD_MORE_COUNT - 1 // 2개 데이터를 가져오기
+    const from = page * LOAD_MORE_COUNT
+    const to = from + LOAD_MORE_COUNT - 1
+    const moreData = await fetchBlogs(from, to)
 
-      const res = await supabase
-        .from('posts')
-        .select('*')
-        .order('created_at', {ascending: false})
-        .range(from, to)
-
-      if (res.data && res.data.length > 0) {
-        // 중복 데이터 확인 후 추가
-        setBlogsData(prevBlogs => {
-          const newBlogs = res.data.filter(
-            blog => !prevBlogs.some(prevBlog => prevBlog.id === blog.id),
-          )
-          return [...prevBlogs, ...newBlogs] // 중복되지 않는 데이터만 추가
-        })
-        setPage(prevPage => prevPage + 1) // 페이지 증가
-      } else {
-        setHasMore(false) // 더 이상 불러올 데이터가 없으면 중단
-      }
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error fetching more blogs:', error)
-    } finally {
-      setIsLoading(false)
+    if (moreData.length > 0) {
+      setBlogsData(prevBlogs => [
+        ...prevBlogs,
+        ...moreData.filter(
+          blog => !prevBlogs.some(prevBlog => prevBlog.id === blog.id),
+        ),
+      ])
+      setPage(prevPage => prevPage + 1)
+    } else {
+      setHasMore(false)
     }
-  }, [isLoading, hasMore, page, supabase])
+  }, [fetchBlogs, hasMore, isLoading, page])
 
-  // Intersection Observer로 감지하여 fetchMoreBlogs 호출
+  // Intersection Observer로 감지하여 추가 데이터 로드
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => {
-        if (entries[0].isIntersecting && !isLoading && hasMore) {
-          fetchMoreBlogs() // observer가 감지되면 추가 데이터를 불러오기
+        if (entries[0].isIntersecting && hasMore && !isLoading) {
+          loadMoreBlogs()
         }
       },
       {threshold: 0.5}, // 요소가 50% 화면에 보일 때 트리거
@@ -96,41 +89,38 @@ const BlogPage = () => {
     const currentObserverRef = observerRef.current // 현재 observerRef 값을 변수에 저장
 
     if (currentObserverRef) {
-      observer.observe(currentObserverRef) // 감지할 요소 연결
+      observer.observe(currentObserverRef)
     }
 
+    // cleanup 함수에서 안전하게 observer 해제
     return () => {
       if (currentObserverRef) {
-        observer.unobserve(currentObserverRef) // 언마운트 시 observer 제거
+        observer.unobserve(currentObserverRef) // cleanup 시점에서 observer 해제
       }
     }
-  }, [fetchMoreBlogs, isLoading, hasMore])
+  }, [loadMoreBlogs, hasMore, isLoading])
 
   // 초기 데이터 로드
   useEffect(() => {
-    // 페이지 첫 로드 시 초기 데이터 호출 (6개)
-    fetchBlogsData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    loadInitialBlogs()
+  }, [loadInitialBlogs])
 
   return (
-    <div>
-      <Layout>
-        <div className="grid grid-cols-1 gap-y-6 md:grid-cols-2 md:gap-x-8">
-          {blogsData.map((data, index) => (
-            <BlogCard
-              key={`${data.id}-${index}`}
-              id={data.id}
-              title={data.title}
-              imageUrl={data.titleImageUrl}
-              content={data.content}
-            />
-          ))}
-        </div>
-        <div ref={observerRef} className="h-10" /> {/* 감지할 빈 요소 */}
-        {isLoading && <div>Loading...</div>} {/* 로딩 상태 표시 */}
-      </Layout>
-    </div>
+    <Layout>
+      <div className="grid grid-cols-1 gap-y-6 md:grid-cols-2 md:gap-x-8">
+        {blogsData.map((data, index) => (
+          <BlogCard
+            key={`${data.id}-${index}`}
+            id={data.id}
+            title={data.title}
+            imageUrl={data.titleImageUrl}
+            content={data.content}
+          />
+        ))}
+      </div>
+      <div ref={observerRef} className="h-10" /> {/* 감지할 빈 요소 */}
+      {isLoading && <div>Loading...</div>} {/* 로딩 상태 표시 */}
+    </Layout>
   )
 }
 

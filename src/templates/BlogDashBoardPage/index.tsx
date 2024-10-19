@@ -20,8 +20,8 @@ import {type Database} from '@/supabase/database.types'
 const BlogDashBoardPage = () => {
   const user = useUser(state => state.user)
 
-  const [isEditProfileVisible, setEditProfileVisible] = useState(false)
-  const [isBlogDetailVisible, setBlogDetailVisible] = useState(false)
+  const [isEditProfileVisible, setIsEditProfileVisible] = useState(false)
+  const [isBlogDetailVisible, setIsBlogDetailVisible] = useState(false)
   const [isTooltipVisible, setIsTooltipVisible] = useState(false)
   const [blogsData, setBlogsData] = useState<
     Database['public']['Tables']['posts']['Row'][]
@@ -31,19 +31,19 @@ const BlogDashBoardPage = () => {
   >(null)
 
   const handleEditProfile = useCallback(() => {
-    setEditProfileVisible(!isEditProfileVisible)
+    setIsEditProfileVisible(!isEditProfileVisible)
   }, [isEditProfileVisible])
 
   const handleBlogDetail = useCallback(
     (blog: Database['public']['Tables']['posts']['Row']) => {
       setSelectedBlog(blog)
-      setBlogDetailVisible(true)
+      setIsBlogDetailVisible(true)
     },
     [],
   )
 
   const closeBlogDetailModal = useCallback(() => {
-    setBlogDetailVisible(false)
+    setIsBlogDetailVisible(false)
   }, [])
 
   const fetchBlogsData = useCallback(async () => {
@@ -133,7 +133,7 @@ const BlogDashBoardPage = () => {
           {selectedBlog && (
             <BlogEdit
               blogData={selectedBlog}
-              onClose={() => setBlogDetailVisible(false)}
+              onClose={() => setIsBlogDetailVisible(false)}
               refreshBlogs={fetchBlogsData}
             />
           )}

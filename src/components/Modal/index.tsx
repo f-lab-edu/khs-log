@@ -59,22 +59,19 @@ const Modal = ({
 
   return (
     <div
-      role="dialog"
-      aria-modal="true"
       className={twMerge(
         `fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/50 ${className}`,
       )}
       onClick={onClose}
-      tabIndex={-1} // 모달 외부 클릭을 통한 닫기 기능을 위한 tabIndex 추가
-      onKeyDown={handleKeyPress} // 키보드 입력을 통한 모달 닫기 기능 추가
+      onKeyDown={handleKeyPress}
+      tabIndex={0} // 모달 외부 클릭과 키보드 이벤트를 처리할 수 있게 tabIndex 추가
     >
       <div
         className={twMerge(
           `relative z-10 max-w-[48rem] w-full m-auto bg-white max-h-[90vh] rounded-3xl ${classWrap} overflow-auto`,
         )}
         onClick={e => e.stopPropagation()} // 모달 내부 클릭 시 닫히지 않도록 방지
-        tabIndex={0} // 모달 내부 요소에 대해 포커스가 가능하도록 tabIndex 추가
-      >
+        aria-labelledby="modal-title">
         {children}
       </div>
     </div>
