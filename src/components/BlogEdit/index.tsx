@@ -4,6 +4,7 @@ import {useCallback, useEffect, useState} from 'react'
 import {remark} from 'remark'
 import html from 'remark-html'
 
+import {createBlog} from '@/app/api/createBlog'
 import {editBlog} from '@/app/api/editBlog'
 import Button from '@/components/Button'
 import Image from '@/components/Image'
@@ -89,8 +90,11 @@ const BlogEdit = ({blogData}: Props) => {
       }
     }
 
-    await editBlog({id: user?.id ?? '', ...formData})
-  }, [formData, imageFile, supabase.storage, user?.id])
+    if (blogData) {
+      await editBlog({id: user?.id ?? '', ...formData})
+    }
+    await createBlog({id: user?.id ?? '', ...formData})
+  }, [blogData, formData, imageFile, supabase.storage, user?.id])
 
   useEffect(() => {
     void convertMarkdownToHtml(formData.content)
@@ -110,7 +114,10 @@ const BlogEdit = ({blogData}: Props) => {
     <div className="flex flex-col h-full p-4 overflow-auto">
       <div className="flex justify-end items-center h-18">
         <Button onClick={handleEdit} className="border border-gray-300">
-          <Typography text="게시글 등록" className="base2" />
+          <Typography
+            text={blogData ? '게시글 수정' : '게시글 등록'}
+            className="base2"
+          />
         </Button>
       </div>
       <div className="mb-4">
