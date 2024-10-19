@@ -59,6 +59,9 @@ const Modal = ({
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
       className={twMerge(
         `fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/50 ${className}`,
       )}
@@ -71,7 +74,13 @@ const Modal = ({
           `relative z-10 max-w-[48rem] w-full m-auto bg-white max-h-[90vh] rounded-3xl ${classWrap} overflow-auto`,
         )}
         onClick={e => e.stopPropagation()} // 모달 내부 클릭 시 닫히지 않도록 방지
-        aria-labelledby="modal-title">
+        aria-labelledby="modal-title"
+        tabIndex={-1} // 포커스는 모달 외부에만 있도록 설정
+      >
+        <h2 id="modal-title" className="sr-only">
+          Modal Title
+        </h2>{' '}
+        {/* 스크린 리더를 위한 제목 */}
         {children}
       </div>
     </div>

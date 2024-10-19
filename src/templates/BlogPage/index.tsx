@@ -22,6 +22,16 @@ const BlogPage = () => {
 
   const observerRef = useRef<HTMLDivElement | null>(null) // Observer 감지용 Ref
 
+  // 중복 데이터 필터링 함수
+  const filterDuplicateBlogs = (
+    newBlogs: Database['public']['Tables']['posts']['Row'][],
+    existingBlogs: Database['public']['Tables']['posts']['Row'][],
+  ) => {
+    return newBlogs.filter(
+      blog => !existingBlogs.some(existingBlog => existingBlog.id === blog.id),
+    )
+  }
+
   // 데이터 로딩 함수 (초기 로딩 및 추가 로딩)
   const fetchBlogs = useCallback(
     async (from: number, to: number) => {
@@ -63,17 +73,13 @@ const BlogPage = () => {
     const moreData = await fetchBlogs(from, to)
 
     if (moreData.length > 0) {
-      setBlogsData(prevBlogs => [
-        ...prevBlogs,
-        ...moreData.filter(
-          blog => !prevBlogs.some(prevBlog => prevBlog.id === blog.id),
-        ),
-      ])
+      const filteredBlogs = filterDuplicateBlogs(moreData, blogsData)
+      setBlogsData(prevBlogs => [...prevBlogs, ...filteredBlogs])
       setPage(prevPage => prevPage + 1)
     } else {
       setHasMore(false)
     }
-  }, [fetchBlogs, hasMore, isLoading, page])
+  }, [fetchBlogs, hasMore, isLoading, page, blogsData])
 
   // Intersection Observer로 감지하여 추가 데이터 로드
   useEffect(() => {
