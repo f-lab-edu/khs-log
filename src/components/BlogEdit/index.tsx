@@ -9,7 +9,8 @@ import {createBlog} from '@/app/api/createBlog'
 import {editBlog} from '@/app/api/editBlog'
 import Button from '@/components/Button'
 import Image from '@/components/Image'
-import Input from '@/components/Input'
+import ImageUpload from '@/components/ImageUpload'
+import InputField from '@/components/InputField'
 import MarkdownView from '@/components/MarkdownView'
 import Textarea from '@/components/Textarea'
 import Typography from '@/components/Typography'
@@ -19,13 +20,15 @@ import {type Database} from '@/supabase/database.types'
 
 import type React from 'react'
 
-type Props = {
+const BlogEdit = ({
+  blogData,
+  onClose,
+  refreshBlogs,
+}: {
   blogData?: Database['public']['Tables']['posts']['Row']
   onClose?: () => void
   refreshBlogs?: () => void
-}
-
-const BlogEdit = ({blogData, onClose, refreshBlogs}: Props) => {
+}) => {
   const router = useRouter()
   const user = useUser(state => state.user)
   const supabase = createBrowserClient()
@@ -76,16 +79,12 @@ const BlogEdit = ({blogData, onClose, refreshBlogs}: Props) => {
         const {data: publicUrlData} = supabase.storage
           .from('images')
           .getPublicUrl(file.name)
-
         const imageUrl = publicUrlData.publicUrl || ''
 
-        // 본문 텍스트에 마크다운 형식으로 이미지 URL 삽입
         setFormData(prev => ({
           ...prev,
           content: prev.content + `\n![이미지 설명](${imageUrl})\n`,
         }))
-
-        // 업로드된 이미지 URL을 리스트에 추가
         setUploadedImages(prev => [...prev, imageUrl])
       }
     }
@@ -99,11 +98,11 @@ const BlogEdit = ({blogData, onClose, refreshBlogs}: Props) => {
 
   // 블로그 저장 처리
   const handleEdit = async () => {
-    if (formData.title.length === 0) {
+    if (!formData.title) {
       return alert('제목을 입력해주세요.')
     }
 
-    if (formData.content.length === 0) {
+    if (!formData.content) {
       return alert('내용을 입력해주세요.')
     }
 
@@ -128,7 +127,6 @@ const BlogEdit = ({blogData, onClose, refreshBlogs}: Props) => {
         const {data: publicUrlData} = supabase.storage
           .from('images')
           .getPublicUrl(mainImageFile.name)
-
         updatedImageUrl = publicUrlData.publicUrl || ''
       }
     }
@@ -175,89 +173,49 @@ const BlogEdit = ({blogData, onClose, refreshBlogs}: Props) => {
           />
         </Button>
       </div>
-      <div className="mb-4">
-        <h2 className="text-xl font-bold mb-2">제목</h2>
-        <Input
-          name="title"
-          value={formData.title}
-          placeholder="제목을 입력해주세요."
-          onChange={e => setFormData({...formData, title: e.target.value})}
-          className="w-full p-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500"
-        />
-      </div>
 
-      {/* 메인 이미지 업로드 */}
-      <div className="mb-4">
-        <h2 className="text-xl font-bold mb-2">메인 이미지</h2>
-        <div className="flex items-center">
-          <label
-            htmlFor="main-image-upload"
-            className="border border-gray-300 p-2 rounded-md shadow-sm cursor-pointer hover:bg-gray-100 mr-4">
-            <Typography text="메인 이미지 수정" className="base2" />
-          </label>
-          <input
-            id="main-image-upload"
-            type="file"
-            accept="image/*"
-            onChange={handleMainImageChange}
-            className="hidden"
-          />
-          {formData.imageUrl && (
-            <div className="flex justify-center items-center">
-              <Image
-                src={formData.imageUrl}
-                alt="Main Image"
-                className="max-w-full h-auto rounded-md mr-4"
-                width={140}
-                height={115}
-              />
-            </div>
-          )}
-        </div>
-      </div>
+      <InputField
+        label="제목"
+        name="title"
+        value={formData.title}
+        placeholder="제목을 입력해주세요."
+        onChange={e => setFormData({...formData, title: e.target.value})}
+      />
 
-      <div className="flex flex-row">
-        {/* 본문 이미지 업로드 */}
+      <ImageUpload
+        label="메인 이미지 수정"
+        onImageChange={handleMainImageChange}
+        imageUrl={formData.imageUrl}
+      />
+
+      {/* 본문 이미지 업로드 */}
+      <ImageUpload
+        label="본문 이미지 추가"
+        onImageChange={handleContentImageUpload}
+        imageUrl={null}
+      />
+
+      {/* 업로드된 이미지 목록 */}
+      {uploadedImages.length > 0 && (
         <div className="mb-4">
-          <h2 className="text-xl font-bold mb-2">본문 이미지 추가</h2>
-          <div className="flex items-center">
-            <label
-              htmlFor="content-image-upload"
-              className="border border-gray-300 p-2 rounded-md shadow-sm cursor-pointer hover:bg-gray-100 mr-4">
-              <Typography text="본문 이미지 추가" className="base2" />
-            </label>
-            <input
-              id="content-image-upload"
-              type="file"
-              accept="image/*"
-              onChange={handleContentImageUpload}
-              className="hidden"
-            />
-          </div>
+          <ul className="flex flex-row">
+            {uploadedImages.map((imageUrl, index) => (
+              <li key={index} className="mb-2">
+                <Image
+                  src={imageUrl}
+                  alt={`Uploaded Image ${index + 1}`}
+                  className="max-w-full h-auto rounded-md mr-4"
+                  width={140}
+                  height={115}
+                />
+              </li>
+            ))}
+          </ul>
         </div>
-
-        {/* 업로드된 이미지 목록 */}
-        {uploadedImages.length > 0 && (
-          <div className="mb-4">
-            <ul className="flex flex-row">
-              {uploadedImages.map((imageUrl, index) => (
-                <li key={index} className="mb-2">
-                  <Image
-                    src={imageUrl}
-                    alt={`Uploaded Image ${index + 1}`}
-                    className="max-w-full h-auto rounded-md mr-4"
-                    width={140}
-                    height={115}
-                  />
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
+      )}
 
       {/* 본문 내용 입력 */}
-      <div className="mt-4">
+      <div>
         <h2 className="text-xl font-bold mb-2">내용</h2>
         <Textarea
           name="content"
