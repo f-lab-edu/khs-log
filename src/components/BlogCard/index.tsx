@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import {usePathname} from 'next/navigation'
+import {twMerge} from 'tailwind-merge'
 
 import Image from '@/components/Image'
 import Typography from '@/components/Typography'
@@ -27,20 +28,26 @@ const BlogCard = ({id, title, imageUrl, content}: Props) => {
             priority
           />
         </div>
-        <div
-          className={`mt-4 h3 leading-[4rem] 2xl:mb-2 2xl:h4 font-black ${isBlogPage ? 'truncate' : ''}`}>
-          {title}
-        </div>
-        <div
-          className={`mt-4 body2 font-semibold text-n-6 ${isBlogPage ? 'truncate' : ''}`}>
-          {content}
-        </div>
+        <Typography
+          className={twMerge(
+            'mt-4 h3 leading-[4rem] 2xl:mb-2 2xl:h4 font-black',
+            isBlogPage && 'truncate',
+          )}
+          text={title}
+        />
+        <Typography
+          className={twMerge(
+            'mt-4 body2 font-semibold text-n-6',
+            isBlogPage && 'truncate',
+          )}
+          text={content}
+        />
         <div className="flex flex-wrap">
           <Link
             href={`/BlogDetail/${id}`}
             className="btn-dark btn-small"
             prefetch={false}>
-            <Typography text="View More" className="base2" />
+            <Typography className="base2" text="View More" />
           </Link>
         </div>
       </div>
