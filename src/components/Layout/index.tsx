@@ -1,6 +1,6 @@
 import axios from 'axios'
 import {useParams, usePathname} from 'next/navigation'
-import {useCallback, useEffect, useState} from 'react'
+import {type ReactNode, useCallback, useEffect, useState} from 'react'
 
 import {createComment} from '@/app/api/createComment'
 import {deleteComment} from '@/app/api/deleteComment'
@@ -15,7 +15,7 @@ import {useUser} from '@/store/user'
 import {throttle} from '@/utils/throttle'
 
 interface Props {
-  children: React.ReactNode
+  children: ReactNode
   isMainView?: boolean
 }
 
