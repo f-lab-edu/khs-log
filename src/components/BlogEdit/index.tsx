@@ -1,6 +1,6 @@
 'use client'
 
-import dynamic from 'next/dynamic'
+import MDEditor from '@uiw/react-md-editor'
 import {useRouter} from 'next/navigation'
 import {useEffect, useState} from 'react'
 
@@ -15,9 +15,6 @@ import {createBrowserClient} from '@/supabase/client'
 import {type BlogData} from '@/templates/BlogPage'
 
 import type {ChangeEvent} from 'react'
-
-// Dynamic import for MDEditor (avoiding SSR issues)
-const MDEditor = dynamic(() => import('@uiw/react-md-editor'), {ssr: false})
 
 const supabase = createBrowserClient()
 
