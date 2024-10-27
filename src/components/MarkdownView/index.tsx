@@ -1,13 +1,17 @@
 import {twMerge} from 'tailwind-merge'
 
+import SkeletonDiv from '@/components/Skeleton'
+
 interface Props {
   content: string
   className?: string
+  isLoading?: boolean
 }
 
-const MarkdownView = ({content, className}: Props) => {
+const MarkdownView = ({content, className, isLoading = false}: Props) => {
   return (
-    <div
+    <SkeletonDiv
+      isLoading={isLoading}
       className={twMerge(className)}
       dangerouslySetInnerHTML={{
         __html: content.replace(/\n/g, '<br />'),

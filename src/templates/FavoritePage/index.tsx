@@ -17,6 +17,7 @@ const FavoritePage = () => {
   const user = useUser(state => state.user)
 
   const [favoritesData, setFavoritesData] = useState<FavoriteData[]>([])
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleRouter = useCallback(
     (id: string) => {
@@ -27,14 +28,22 @@ const FavoritePage = () => {
 
   const fetchFavoritesData = useCallback(async () => {
     if (user?.id) {
-      const data = await getBlogsFavorites({userId: user.id})
-      setFavoritesData(data ?? [])
+      try {
+        setIsLoading(true)
+        const data = await getBlogsFavorites({userId: user.id})
+        setFavoritesData(data ?? [])
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to fetch favorites:', error)
+      } finally {
+        setIsLoading(false)
+      }
     }
   }, [user?.id])
 
   useEffect(() => {
     if (user?.id) {
-      void fetchFavoritesData()
+      fetchFavoritesData()
     }
   }, [fetchFavoritesData, user?.id])
 

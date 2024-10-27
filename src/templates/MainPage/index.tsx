@@ -7,6 +7,7 @@ import React, {useCallback, useEffect, useState} from 'react'
 import IconRow, {type IconRowProps} from '@/components/IconRow'
 import Layout from '@/components/Layout'
 import LoginForm from '@/components/LoginForm'
+import SkeletonDiv from '@/components/Skeleton'
 import Typography from '@/components/Typography'
 import {type Database} from '@/supabase/database.types'
 
@@ -14,9 +15,11 @@ export type ProfileData = Database['public']['Tables']['profile']['Row']
 
 const MainPage = () => {
   const [profileData, setProfileData] = useState<ProfileData | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   const fetchProfileData = useCallback(async () => {
     try {
+      setIsLoading(true)
       const {data} = await axios.get<{profileData: ProfileData[]}>(
         '/api/EditProfile',
       )
@@ -24,6 +27,8 @@ const MainPage = () => {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error fetching profile data:', error)
+    } finally {
+      setIsLoading(false)
     }
   }, [])
 
@@ -32,8 +37,8 @@ const MainPage = () => {
   }, [fetchProfileData])
 
   return (
-    <div>
-      <Layout isMainView>
+    <Layout isMainView>
+      <SkeletonDiv isLoading={isLoading} className="w-full h-full aspect-[2.4]">
         <LoginForm className="flex justify-end items-center h-18 mb-6 selection:border-b border-n-3" />
         <Typography
           text={profileData?.mainTitle ?? ''}
@@ -43,7 +48,7 @@ const MainPage = () => {
           text={profileData?.subTitle ?? ''}
           className="mb-12 body1 text-n-4 md:mb-6"
         />
-        <div className="flex py-8 border-t border-n-3 lg:block md:py-8 dark:border-n-5">
+        <div className="flex py-8 border-t border-n-3 lg:block md:py-8">
           <div className="shrink-0 w-[21rem] pr-20 2xl:w-72 2xl:pr-12 lg:w-full lg:mb-10 lg:pr-0">
             <Typography
               text={profileData?.contents ?? ''}
@@ -74,8 +79,8 @@ const MainPage = () => {
             </div>
           )}
         </div>
-      </Layout>
-    </div>
+      </SkeletonDiv>
+    </Layout>
   )
 }
 

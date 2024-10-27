@@ -4,7 +4,7 @@ import React, {useEffect, useState, useRef, useCallback} from 'react'
 
 import BlogCard from '@/components/BlogCard'
 import Layout from '@/components/Layout'
-import Typography from '@/components/Typography'
+import SkeletonDiv from '@/components/Skeleton'
 import {createBrowserClient} from '@/supabase/client'
 import {type Database} from '@/supabase/database.types'
 
@@ -114,19 +114,20 @@ const BlogPage = () => {
 
   return (
     <Layout>
-      <div className="grid grid-cols-1 gap-y-6 md:grid-cols-2 md:gap-x-8">
-        {blogsData.map((data, index) => (
-          <BlogCard
-            key={`${data.id}-${index}`}
-            id={data.id}
-            title={data.title}
-            imageUrl={data.titleImageUrl}
-            content={data.content}
-          />
-        ))}
-      </div>
-      <div ref={observerRef} className="h-10" /> {/* 감지할 빈 요소 */}
-      {isLoading && <Typography text="Loading..." />} {/* 로딩 상태 표시 */}
+      <SkeletonDiv isLoading={isLoading} className="w-full h-full aspect-[2.4]">
+        <div className="grid grid-cols-1 gap-y-6 md:grid-cols-2 md:gap-x-8">
+          {blogsData.map((data, index) => (
+            <BlogCard
+              key={`${data.id}-${index}`}
+              id={data.id}
+              title={data.title}
+              imageUrl={data.titleImageUrl}
+              content={data.content}
+            />
+          ))}
+        </div>
+        <div ref={observerRef} className="h-10" /> {/* 감지할 빈 요소 */}
+      </SkeletonDiv>
     </Layout>
   )
 }

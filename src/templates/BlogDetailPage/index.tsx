@@ -15,6 +15,7 @@ import Icon from '@/components/Icon'
 import Image from '@/components/Image'
 import Layout from '@/components/Layout'
 import MarkdownView from '@/components/MarkdownView'
+import SkeletonDiv from '@/components/Skeleton'
 import Typography from '@/components/Typography'
 import {useUser} from '@/store/user'
 import {type BlogData} from '@/templates/BlogPage'
@@ -26,6 +27,7 @@ const BlogDetailPage = () => {
   const [blogDetailData, setBlogDetailData] = useState<BlogData | null>(null)
   const [isBookmarked, setIsBookmarked] = useState(false)
   const [htmlContent, setHtmlContent] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   const blogId = `${params.id}`
 
@@ -37,11 +39,14 @@ const BlogDetailPage = () => {
   const fetchBlogDetailData = useCallback(async () => {
     if (blogId) {
       try {
+        setIsLoading(true)
         const {data} = await axios.get(`/api/BlogDetail?id=${blogId}`)
         setBlogDetailData(data.post)
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Failed to fetch blog detail:', error)
+      } finally {
+        setIsLoading(false)
       }
     }
   }, [blogId])
@@ -53,7 +58,7 @@ const BlogDetailPage = () => {
 
     const data = await getBlogFavorite({blogId: `${blogId}`})
 
-    if (data) {
+    if (data?.length !== 0) {
       setIsBookmarked(true)
     }
   }, [blogId])
@@ -89,50 +94,50 @@ const BlogDetailPage = () => {
 
   useEffect(() => {
     if (blogDetailData?.content) {
-      void convertMarkdownToHtml(blogDetailData.content)
+      convertMarkdownToHtml(blogDetailData.content)
     }
   }, [blogDetailData?.content, convertMarkdownToHtml])
 
   return (
     <Layout>
-      {blogDetailData ? (
-        <div>
-          {blogDetailData.titleImageUrl && (
-            <div className="relative w-full aspect-[2.4]">
-              <Image
-                className="rounded-xl object-cover"
-                src={blogDetailData.titleImageUrl}
-                fill
-                alt="blogDetailImage"
-                priority
-              />
-            </div>
-          )}
+      <SkeletonDiv isLoading={isLoading} className="w-full h-full aspect-[2.4]">
+        {blogDetailData && (
           <div>
-            <div className="flex justify-between items-center">
-              <Typography
-                text={blogDetailData.title}
-                className="mt-4 h3 leading-[4rem] 2xl:mb-2 2xl:h4 font-black"
-              />
-              <Button
-                type="submit"
-                onClick={handleSubmit}
-                className={twMerge('btn-small hover:bg-accent-2')}>
-                <Icon
-                  iconName={isBookmarked ? 'favoriteFilled' : 'favorite'}
-                  className="fill-accent-6 w-8 h-8"
+            {blogDetailData.titleImageUrl && (
+              <div className="relative w-full aspect-[2.4]">
+                <Image
+                  className="rounded-xl object-cover"
+                  src={blogDetailData.titleImageUrl}
+                  fill
+                  alt="blogDetailImage"
+                  priority
                 />
-              </Button>
+              </div>
+            )}
+            <div>
+              <div className="flex justify-between items-center">
+                <Typography
+                  text={blogDetailData.title}
+                  className="mt-4 h3 leading-[4rem] 2xl:mb-2 2xl:h4 font-black"
+                />
+                <Button
+                  type="submit"
+                  onClick={handleSubmit}
+                  className={twMerge('btn-small hover:bg-accent-2')}>
+                  <Icon
+                    iconName={isBookmarked ? 'favoriteFilled' : 'favorite'}
+                    className="fill-accent-6 w-8 h-8"
+                  />
+                </Button>
+              </div>
+              <MarkdownView
+                content={htmlContent}
+                className="mt-4 body2 font-semibold text-n-6"
+              />
             </div>
-            <MarkdownView
-              content={htmlContent}
-              className="mt-4 body2 font-semibold text-n-6"
-            />
           </div>
-        </div>
-      ) : (
-        <Typography text="Loading..." />
-      )}
+        )}
+      </SkeletonDiv>
     </Layout>
   )
 }

@@ -1,16 +1,20 @@
-import {type ReactNode} from 'react'
+import {type HTMLAttributes, type ReactNode} from 'react'
 
-interface Props {
+interface Props extends HTMLAttributes<HTMLDivElement> {
   isLoading: boolean
-  children: ReactNode
+  children?: ReactNode
   className?: string
 }
 
-const SkeletonDiv = ({isLoading, children, className = ''}: Props) => {
+const SkeletonDiv = ({isLoading, children, className = '', ...rest}: Props) => {
   if (isLoading) {
     return <div className={`animate-pulse bg-gray-300 rounded ${className}`} />
   }
-  return <div className={className}>{children}</div>
+  return (
+    <div className={className} {...rest}>
+      {children}
+    </div>
+  )
 }
 
 export default SkeletonDiv
