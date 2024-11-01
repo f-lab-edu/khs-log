@@ -40,7 +40,7 @@ const BlogDetailPage = () => {
     if (blogId) {
       try {
         setIsLoading(true)
-        const {data} = await axios.get(`/api/BlogDetail?id=${blogId}`)
+        const {data} = await axios.get(`/api/blogDetail?id=${blogId}`)
         setBlogDetailData(data.post)
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -58,7 +58,7 @@ const BlogDetailPage = () => {
 
     const data = await getBlogFavorite({blogId: `${blogId}`})
 
-    if (data?.length !== 0) {
+    if (data?.length) {
       setIsBookmarked(true)
     }
   }, [blogId])

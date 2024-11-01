@@ -8,6 +8,8 @@ import './globals.css'
 import SessionProvider from '@/components/SessionProvider'
 import {type ReactNode} from 'react'
 
+import {type ReactNode} from 'react'
+
 const nunito = Nunito({
   weight: ['200', '300', '400', '500', '600', '700', '800', '900', '1000'],
   subsets: ['latin'],

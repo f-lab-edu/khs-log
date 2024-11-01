@@ -21,7 +21,7 @@ const FavoritePage = () => {
 
   const handleRouter = useCallback(
     (id: string) => {
-      router.push(`/BlogDetail/${id}`)
+      router.push(`/blogDetail/${id}`)
     },
     [router],
   )
@@ -55,7 +55,7 @@ const FavoritePage = () => {
             <div key={data.id} className="flex justify-center items-center">
               <BlogList
                 onClick={() => handleRouter(data.post_id ?? '')}
-                title={data.post_title}
+                title={data.post_title ?? ''}
               />
             </div>
           ))

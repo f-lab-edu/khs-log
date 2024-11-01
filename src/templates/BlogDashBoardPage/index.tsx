@@ -43,8 +43,7 @@ const BlogDashBoardPage = () => {
 
   const fetchBlogsData = async () => {
     try {
-      setIsLoading(true)
-      const res = await axios.get(`/api/BlogDashBoard`)
+      const res = await axios.get(`/api/blogDashBoard`)
       setBlogsData(res.data.blogsData)
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -129,11 +128,7 @@ const BlogDashBoardPage = () => {
           classWrap="max-w-[48rem] md:min-h-screen-ios md:rounded-none"
           isVisible={isBlogDetailVisible}
           onClose={closeBlogDetailModal}>
-          <BlogEdit
-            blogData={selectedBlog}
-            onClose={closeBlogDetailModal}
-            refreshBlogs={fetchBlogsData}
-          />
+          <BlogEdit blogData={selectedBlog} refreshBlogs={fetchBlogsData} />
         </Modal>
       )}
     </div>

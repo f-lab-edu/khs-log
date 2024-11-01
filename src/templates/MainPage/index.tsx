@@ -21,7 +21,7 @@ const MainPage = () => {
     try {
       setIsLoading(true)
       const {data} = await axios.get<{profileData: ProfileData[]}>(
-        '/api/EditProfile',
+        '/api/editProfile',
       )
       setProfileData(data.profileData[0] || null)
     } catch (error) {
