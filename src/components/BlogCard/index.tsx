@@ -69,7 +69,7 @@ const BlogCard = ({id, title, imageUrl, content}: Props) => {
         />
         <div className="flex flex-wrap">
           <Link
-            href={`/BlogDetail/${id}`}
+            href={`/blogDetail/${id}`}
             className="btn-dark btn-small"
             prefetch={false}>
             <Typography className="base2" text="View More" />

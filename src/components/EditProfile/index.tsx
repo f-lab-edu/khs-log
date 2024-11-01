@@ -73,7 +73,7 @@ const EditProfile = () => {
 
   const fetchProfileData = useCallback(async () => {
     try {
-      const {data} = await axios.get('/api/EditProfile')
+      const {data} = await axios.get('/api/editProfile')
       const profile = data.profileData[0]
       setProfileData(profile)
       setMainTitle(profile.mainTitle ?? '')

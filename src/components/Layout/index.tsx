@@ -37,12 +37,12 @@ const Layout = ({children, isMainView = false}: Props) => {
   }, 200)
 
   const fetchBlogCommentData = useCallback(async () => {
-    const res = await axios(`/api/BlogDetail?id=${params.id}`)
+    const res = await axios(`/api/blogDetail?id=${params.id}`)
     setBlogCommentData(res.data.comments)
   }, [params.id])
 
   const fetchCommentsData = useCallback(async () => {
-    const res = await axios(`/api/Blog`)
+    const res = await axios(`/api/blog`)
     setCommentsData(res.data.comments)
   }, [])
 
