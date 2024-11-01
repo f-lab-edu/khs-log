@@ -1,7 +1,14 @@
 'use client'
 
 import axios from 'axios'
-import {useCallback, useEffect, useState} from 'react'
+import {
+  type ChangeEvent,
+  type Dispatch,
+  type SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
 
 import {createProfile} from '@/app/api/createProfile'
 import {editProfile} from '@/app/api/editProfile'
@@ -30,13 +37,13 @@ const EditProfile = () => {
   const [imageUrl, setImageUrl] = useState<string>('')
 
   const handleChange = useCallback(
-    (setter: React.Dispatch<React.SetStateAction<string>>) =>
-      (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    (setter: Dispatch<SetStateAction<string>>) =>
+      (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
         setter(event.target.value),
     [],
   )
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const file = event.target.files[0]
       setImageFile(file)
