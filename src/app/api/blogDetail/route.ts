@@ -14,19 +14,20 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const [
-      {data: postData, error: postError},
-      {data: commentsData, error: commentsError},
-    ] = await Promise.all([
-      supabase.from('posts').select('*').eq('id', blogId).single(),
-      supabase.from('comments').select('*').eq('post_id', blogId), // comments 테이블에서 post_id가 blogId인 것들을 가져옴
-    ])
+    const {data: postData, error: postError} = await supabase
+      .from('posts')
+      .select('*')
+      .eq('id', blogId)
+      .single()
+
+    const {data: commentsData, error: commentsError} = await supabase
+      .from('comments')
+      .select('*')
+      .eq('post_id', blogId)
 
     if (postError || commentsError) {
-      return NextResponse.json(
-        {error: postError?.message || commentsError?.message},
-        {status: 500},
-      )
+      const errorMessage = postError?.message || commentsError?.message
+      return NextResponse.json({error: errorMessage}, {status: 500})
     }
 
     return NextResponse.json({post: postData, comments: commentsData})
