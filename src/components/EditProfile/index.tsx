@@ -66,25 +66,30 @@ const EditProfileModal = forwardRef<EditProfileModalRef, EditProfileModalProps>(
     }))
 
     const validateFile = (file: File): boolean => {
-      if (/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(file.name)) {
-        setDialogConfig({
-          isVisible: true,
-          isError: true,
+      const validations = [
+        {
+          condition: /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(file.name),
           message: '영문 파일명만 허용됩니다.',
-        })
-        return false
-      }
-
-      if (file.size > FILE_MAX_SIZE) {
-        setDialogConfig({
-          isVisible: true,
-          isError: true,
+        },
+        {
+          condition: file.size > FILE_MAX_SIZE,
           message: '파일 용량은 1MB 이하만 허용됩니다.',
-        })
-        return false
-      }
+        },
+      ]
 
-      return true
+      const isValid = !validations.some(({condition, message}) => {
+        if (condition) {
+          setDialogConfig({
+            isVisible: true,
+            isError: true,
+            message,
+          })
+          return true // 중단
+        }
+        return false
+      })
+
+      return isValid
     }
 
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
