@@ -37,7 +37,9 @@ const BlogDetailPage = () => {
   const fetchBlogDetailData = useCallback(async () => {
     if (blogId) {
       try {
-        const {data} = await axios.get(`/api/blogDetail?id=${blogId}`)
+        const {data} = await axios.get<{post: BlogData}>(
+          `/api/blogDetail?id=${blogId}`,
+        )
         setBlogDetailData(data.post)
       } catch (error) {
         // eslint-disable-next-line no-console
