@@ -55,29 +55,23 @@ const BlogEdit = ({
       },
     ]
 
-    const isValid = !validations.some(({condition, message}) => {
-      if (condition) {
-        setDialogConfig({
-          isVisible: true,
-          isError: true,
-          message,
-        })
-        return true // 중단
-      }
+    const invalidValidation = validations.find(({condition}) => condition)
+    if (invalidValidation) {
+      setDialogConfig({
+        isVisible: true,
+        isError: true,
+        message: invalidValidation.message,
+      })
       return false
-    })
+    }
 
-    return isValid
+    return true
   }
 
   const handleMainImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const file = event.target.files[0]
-      const isValidateFile = !validateFile(file)
-
-      if (isValidateFile) {
-        return
-      }
+      if (!validateFile(file)) return
 
       setMainImageFile(file)
       setFormData(prev => ({...prev, imageUrl: URL.createObjectURL(file)}))
@@ -85,18 +79,11 @@ const BlogEdit = ({
   }
 
   const uploadImage = async (file: File) => {
-    const isValidateFile = !validateFile(file)
-
-    if (isValidateFile) {
-      return
-    }
+    if (!validateFile(file)) return null
 
     const {error} = await supabase.storage
       .from('images')
-      .upload(file.name, file, {
-        cacheControl: '0',
-        upsert: true,
-      })
+      .upload(file.name, file, {cacheControl: '0', upsert: true})
 
     if (error) {
       setDialogConfig({
@@ -154,11 +141,7 @@ const BlogEdit = ({
 
     if (files.length > 0) {
       const file = files[0]
-      const isValidateFile = !validateFile(file)
-
-      if (isValidateFile) {
-        return
-      }
+      if (!validateFile(file)) return
 
       const imageUrl = await uploadImage(file)
       if (imageUrl) {
@@ -238,9 +221,7 @@ const BlogEdit = ({
           <MDEditor
             value={formData.content}
             onChange={value => setFormData({...formData, content: value || ''})}
-            style={{
-              minHeight: '500px',
-            }}
+            style={{minHeight: '500px'}}
             height={500}
             preview="live"
             visibleDragbar

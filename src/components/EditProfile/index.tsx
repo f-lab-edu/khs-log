@@ -27,7 +27,6 @@ import {createBrowserClient} from '@/supabase/client'
 import {type ProfileData} from '@/templates/MainPage'
 
 const FILE_MAX_SIZE = 1048576
-
 const supabase = createBrowserClient()
 
 interface EditProfileModalProps {}
@@ -65,7 +64,11 @@ const EditProfileModal = forwardRef<EditProfileModalRef, EditProfileModalProps>(
       },
     }))
 
-    const validateFile = (file: File): boolean => {
+    const openDialog = (message: string, isError: boolean = false) => {
+      setDialogConfig({isVisible: true, isError, message})
+    }
+
+    const validateFile = useCallback((file: File): boolean => {
       const validations = [
         {
           condition: /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(file.name),
@@ -77,43 +80,26 @@ const EditProfileModal = forwardRef<EditProfileModalRef, EditProfileModalProps>(
         },
       ]
 
-      const isValid = !validations.some(({condition, message}) => {
-        if (condition) {
-          setDialogConfig({
-            isVisible: true,
-            isError: true,
-            message,
-          })
-          return true // 중단
-        }
+      const failedValidation = validations.find(({condition}) => condition)
+      if (failedValidation) {
+        openDialog(failedValidation.message, true)
         return false
-      })
+      }
 
-      return isValid
-    }
+      return true
+    }, [])
 
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
       if (event.target.files) {
         const file = event.target.files[0]
-        const isValidateFile = !validateFile(file)
-
-        if (isValidateFile) {
-          return
-        }
+        if (!validateFile(file)) return
 
         setImageFile(file)
         setImageUrl(URL.createObjectURL(file))
       }
     }
 
-    const handleSubmitButton = () => {
-      setDialogConfig({
-        ...dialogConfig,
-        isVisible: true,
-        isError: false,
-        message: '저장하시겠습니까?',
-      })
-    }
+    const handleSubmitButton = () => openDialog('저장하시겠습니까?', false)
 
     const handleChange = useCallback(
       (setter: Dispatch<SetStateAction<string>>) =>
@@ -124,26 +110,14 @@ const EditProfileModal = forwardRef<EditProfileModalRef, EditProfileModalProps>(
 
     const uploadImage = useCallback(
       async (file: File) => {
-        const isValidateFile = !validateFile(file)
-
-        if (isValidateFile) {
-          return
-        }
+        if (!validateFile(file)) return null
 
         const {error} = await supabase.storage
           .from('images')
-          .upload(file.name, file, {
-            cacheControl: '0',
-            upsert: true,
-          })
+          .upload(file.name, file, {cacheControl: '0', upsert: true})
 
         if (error) {
-          setDialogConfig({
-            ...dialogConfig,
-            isVisible: true,
-            isError: true,
-            message: '이미지 업로드에 실패했습니다.',
-          })
+          openDialog('이미지 업로드에 실패했습니다.', true)
           return null
         }
 
@@ -152,7 +126,7 @@ const EditProfileModal = forwardRef<EditProfileModalRef, EditProfileModalProps>(
           .getPublicUrl(file.name)
         return publicUrlData.publicUrl || ''
       },
-      [dialogConfig],
+      [validateFile],
     )
 
     const fetchProfileData = useCallback(async () => {
@@ -177,7 +151,6 @@ const EditProfileModal = forwardRef<EditProfileModalRef, EditProfileModalProps>(
         const uploadedImageUrl = imageFile
           ? await uploadImage(imageFile)
           : imageUrl
-
         if (!uploadedImageUrl) return
 
         const profilePayload = {
@@ -194,23 +167,14 @@ const EditProfileModal = forwardRef<EditProfileModalRef, EditProfileModalProps>(
           ? await editProfile(profilePayload)
           : await createProfile(profilePayload)
 
-        if (updatedProfile) {
-          setProfileData(updatedProfile)
-        }
+        if (updatedProfile) setProfileData(updatedProfile)
       } catch (error) {
-        setDialogConfig({
-          ...dialogConfig,
-          isVisible: true,
-          isError: true,
-          message: '등록/수정할 수 없습니다.',
-        })
+        openDialog('등록/수정할 수 없습니다.', true)
       } finally {
-        setDialogConfig(prev => ({...prev, isVisible: false}))
         setIsModalVisible(false)
       }
     }, [
       content,
-      dialogConfig,
       imageFile,
       imageUrl,
       mainTitle,
@@ -221,11 +185,9 @@ const EditProfileModal = forwardRef<EditProfileModalRef, EditProfileModalProps>(
     ])
 
     const handleConfirmDialog = useCallback(() => {
-      if (dialogConfig.isError) {
-        setDialogConfig(prev => ({...prev, isVisible: false}))
-      } else {
-        handleSaveProfile()
-      }
+      dialogConfig.isError
+        ? setDialogConfig(prev => ({...prev, isVisible: false}))
+        : handleSaveProfile()
     }, [dialogConfig.isError, handleSaveProfile])
 
     useEffect(() => {
