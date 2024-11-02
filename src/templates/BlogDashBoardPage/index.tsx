@@ -7,12 +7,12 @@ import {deleteBlog} from '@/app/api/deleteBlog'
 import BlogEdit from '@/components/BlogEdit'
 import BlogList from '@/components/BlogList'
 import Button from '@/components/Button'
+import Dialog from '@/components/Dialog'
 import EditProfile from '@/components/EditProfile'
 import Icon from '@/components/Icon'
 import IconButton from '@/components/IconButton'
 import Layout from '@/components/Layout'
 import Modal from '@/components/Modal'
-import TooltipModal from '@/components/TooltipModal'
 import Typography from '@/components/Typography'
 import {useUser} from '@/store/user'
 import {type BlogData} from '@/templates/BlogPage'
@@ -96,16 +96,12 @@ const BlogDashBoardPage = () => {
                 iconName="delete"
                 onClick={() => setTooltipVisibleId(data.id)}
               />
-              <TooltipModal
-                isModalVisible={tooltipVisibleId === data.id}
-                title="게시글을 삭제하시겠습니까?">
-                <Button onClick={() => handleDeleteBlog(data.id)}>
-                  <Typography text="예" />
-                </Button>
-                <Button onClick={() => setTooltipVisibleId(null)}>
-                  <Typography text="아니오" />
-                </Button>
-              </TooltipModal>
+              <Dialog
+                isVisible={tooltipVisibleId === data.id}
+                message="삭제하시겠습니까?"
+                onConfirm={() => handleDeleteBlog(data.id)}
+                onCancel={() => setTooltipVisibleId(null)}
+              />
             </div>
           ))}
       </Layout>
