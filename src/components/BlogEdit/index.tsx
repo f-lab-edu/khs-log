@@ -68,7 +68,6 @@ const BlogEdit = ({
   const handleMainImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const file = event.target.files[0]
-
       const isValidateFile = !validateFile(file)
 
       if (isValidateFile) {

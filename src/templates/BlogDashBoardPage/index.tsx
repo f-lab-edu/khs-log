@@ -1,14 +1,16 @@
 'use client'
 
 import axios from 'axios'
-import React, {useCallback, useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
 
 import {deleteBlog} from '@/app/api/deleteBlog'
 import BlogEdit from '@/components/BlogEdit'
 import BlogList from '@/components/BlogList'
 import Button from '@/components/Button'
 import Dialog from '@/components/Dialog'
-import EditProfile from '@/components/EditProfile'
+import EditProfileModal, {
+  type EditProfileModalRef,
+} from '@/components/EditProfile'
 import Icon from '@/components/Icon'
 import IconButton from '@/components/IconButton'
 import Layout from '@/components/Layout'
@@ -20,14 +22,15 @@ import {type BlogData} from '@/templates/BlogPage'
 const BlogDashBoardPage = () => {
   const user = useUser(state => state.user)
 
-  const [isEditProfileVisible, setIsEditProfileVisible] = useState(false)
+  const editProfileModalRef = useRef<EditProfileModalRef>(null)
+
   const [isBlogDetailVisible, setIsBlogDetailVisible] = useState(false)
   const [blogsData, setBlogsData] = useState<BlogData[]>([])
   const [selectedBlog, setSelectedBlog] = useState<BlogData | null>(null)
   const [tooltipVisibleId, setTooltipVisibleId] = useState<string | null>(null)
 
   const handleEditProfile = () => {
-    setIsEditProfileVisible(prev => !prev)
+    editProfileModalRef.current?.openModal()
   }
 
   const closeBlogDetailModal = () => {
@@ -105,12 +108,7 @@ const BlogDashBoardPage = () => {
             </div>
           ))}
       </Layout>
-      <Modal
-        classWrap="max-w-[48rem] md:min-h-screen-ios md:rounded-none"
-        isVisible={isEditProfileVisible}
-        onClose={handleEditProfile}>
-        <EditProfile />
-      </Modal>
+      <EditProfileModal ref={editProfileModalRef} />
       {selectedBlog && (
         <Modal
           classWrap="max-w-[48rem] md:min-h-screen-ios md:rounded-none"
