@@ -162,14 +162,10 @@ const EditProfileModal = forwardRef<EditProfileModalRef, EditProfileModalProps>(
         setContent(profile.contents ?? '')
         setImageUrl(profile.imageUrl ?? '')
       } catch (error) {
-        setDialogConfig({
-          ...dialogConfig,
-          isVisible: true,
-          isError: true,
-          message: '오류가 발생했습니다.',
-        })
+        // eslint-disable-next-line no-console
+        console.error('Error fetching profile data:', error)
       }
-    }, [dialogConfig])
+    }, [])
 
     const handleSaveProfile = useCallback(async () => {
       try {
