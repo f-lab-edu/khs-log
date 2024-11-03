@@ -167,7 +167,14 @@ const EditProfileModal = forwardRef<EditProfileModalRef, EditProfileModalProps>(
           ? await editProfile(profilePayload)
           : await createProfile(profilePayload)
 
-        if (updatedProfile) setProfileData(updatedProfile)
+        if (updatedProfile) {
+          setDialogConfig(prev => ({
+            ...prev,
+            isVisible: false,
+            isError: false,
+          }))
+          setProfileData(updatedProfile)
+        }
       } catch (error) {
         openDialog('등록/수정할 수 없습니다.', true)
       } finally {

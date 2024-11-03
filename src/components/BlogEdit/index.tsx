@@ -23,20 +23,21 @@ const supabase = createBrowserClient()
 
 const BlogEdit = ({
   blogData,
-  refreshBlogs,
+  refetchBlogs,
 }: {
   blogData?: BlogData
-  refreshBlogs?: () => void
+  refetchBlogs?: () => void
 }) => {
   const router = useRouter()
   const user = useUser(state => state.user)
 
+  const [mainImageFile, setMainImageFile] = useState<File | null>(null)
+  const [message, setMessage] = useState('') // 성공 메시지 상태 추가
   const [formData, setFormData] = useState({
     title: blogData?.title ?? '',
     imageUrl: blogData?.titleImageUrl ?? '',
     content: blogData?.content ?? '',
   })
-  const [mainImageFile, setMainImageFile] = useState<File | null>(null)
   const [dialogConfig, setDialogConfig] = useState({
     isVisible: false,
     isError: false,
@@ -118,7 +119,8 @@ const BlogEdit = ({
 
       if (blogData) {
         await editBlog({id: blogData.id, ...blogPayload})
-        refreshBlogs?.()
+        refetchBlogs?.()
+        setMessage('성공적으로 수정되었습니다.') // 성공 메시지 설정
       } else {
         await createBlog({id: user?.id ?? '', ...blogPayload})
         router.push('/blog')
@@ -130,6 +132,7 @@ const BlogEdit = ({
         isError: true,
         message: '게시물을 등록/수정할 수 없습니다.',
       })
+      setMessage('게시물을 등록/수정할 수 없습니다.') // 성공 메시지 설정
     } finally {
       setDialogConfig(prev => ({...prev, isVisible: false}))
     }
@@ -200,6 +203,13 @@ const BlogEdit = ({
           />
         </Button>
       </div>
+
+      {message && (
+        <div
+          className={`p-4 mb-4 ${dialogConfig.isError ? 'text-red-800 bg-red-200 rounded-lg' : 'text-green-800 bg-green-200 rounded-lg'}`}>
+          <Typography text={message} className="base2" />
+        </div>
+      )}
 
       <InputField
         label="제목"
