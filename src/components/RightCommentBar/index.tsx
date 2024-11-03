@@ -92,7 +92,7 @@ const RightCommentBar = ({
         ))}
       </div>
       {isBlogDetailPage && (
-        <div className="absolute left-0 right-0 bottom-0 p-6">
+        <div className="absolute left-0 right-0 bottom-0 py-6 px-3">
           <CommentInput onClick={handleInput} />
         </div>
       )}
