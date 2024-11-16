@@ -29,7 +29,7 @@ const LeftSideBar = ({user, isLeftSideBarVisible = false}: Props) => {
     <div className={sideBarClass}>
       <div className={headerClass}>
         {!isLeftSideBarVisible && (
-          <BlogTitle title="ivory-log" isLogin={isLogin} />
+          <BlogTitle title="khs-log" isLogin={isLogin} />
         )}
       </div>
 
