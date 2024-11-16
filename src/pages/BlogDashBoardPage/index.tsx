@@ -3,6 +3,7 @@
 import axios from 'axios'
 import React, {useCallback, useEffect, useState, useRef} from 'react'
 
+import {deleteBlog} from '@/app/api/deleteBlog'
 import BlogEditModal, {
   type BlogEditModalRef,
 } from '@/features/blog/components/BlogEditModal'
@@ -136,9 +137,7 @@ const BlogDashBoardPage = () => {
       if (!user) return
 
       try {
-        await axios.delete(`/api/blogDashBoard`, {
-          data: {id: blogId},
-        })
+        await deleteBlog({userId: user.id, blogId, role: user.role})
         setBlogsData(prevData => prevData.filter(blog => blog.id !== blogId))
         setBlogId(null)
       } catch (error) {
