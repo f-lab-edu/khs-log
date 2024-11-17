@@ -5,7 +5,7 @@ import React from 'react'
 import BlogEdit from '@/features/blog/components/BlogEdit'
 import Layout from '@/widgets/Layout/components'
 
-export const runtime = 'experimental-edge'
+export const runtime = 'edge'
 
 const BlogCreatePage = () => {
   return (
