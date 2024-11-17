@@ -8,6 +8,9 @@ const nextConfig = {
       },
     ],
   },
+  experimental: {
+    esmExternals: true, // ESM 모듈 지원 활성화
+  },
 }
 
 export default nextConfig
