@@ -1,6 +1,8 @@
 import {getPostsByRange} from '@/app/api/getPosts'
 import BlogPage from '@/pages/BlogPage'
 
+export const runtime = 'edge'
+
 const INITIAL_MAXIMUM_INDEX = 1 // 처음에 불러올 데이터 수
 
 export default async function Blog() {
