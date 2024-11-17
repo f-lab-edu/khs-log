@@ -29,7 +29,7 @@ const BlogPage = ({initialData}: BlogPageProps) => {
     const to = from + LOAD_MORE_COUNT - 1
     const moreData = await getPostsByRange(from, to)
 
-    if (moreData.length > 0) {
+    if (moreData) {
       setBlogsData(prevBlogs => [...prevBlogs, ...moreData])
       setPage(prevPage => prevPage + 1)
     } else {
@@ -60,10 +60,6 @@ const BlogPage = ({initialData}: BlogPageProps) => {
       }
     }
   }, [loadMoreBlogs, hasMore])
-
-  if (initialData.length === 0) {
-    return <div className="text-center text-gray-500">No posts available.</div>
-  }
 
   return (
     <Layout>

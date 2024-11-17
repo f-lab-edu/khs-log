@@ -19,7 +19,7 @@ export async function getAllPosts() {
     })
 
     if (!response.ok) {
-      throw new Error('Failed to fetch posts data')
+      return []
     }
 
     const data = await response.json()
@@ -51,7 +51,7 @@ export async function getPostsByRange(from: number, to: number) {
     })
 
     if (!response.ok) {
-      throw new Error('Failed to fetch posts data')
+      return []
     }
 
     const data = await response.json()

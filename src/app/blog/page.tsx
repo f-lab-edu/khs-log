@@ -8,13 +8,15 @@ export default async function Blog() {
     const data = await getPostsByRange(0, INITIAL_MAXIMUM_INDEX)
 
     if (!data || data.length === 0) {
-      throw new Error('Posts data is empty or invalid')
+      return (
+        <div className="text-center text-gray-500">
+          No posts available. Please try again later.
+        </div>
+      )
     }
 
     return <BlogPage initialData={data} />
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('Error fetching posts data:', error)
     return (
       <div className="text-center text-red-500">
         Error loading posts data. Please try again later.
