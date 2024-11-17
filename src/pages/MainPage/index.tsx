@@ -14,7 +14,14 @@ interface Props {
 }
 
 const Page = ({profileData}: Props) => {
-  const {mainTitle, subTitle, contents, skills, tools, imageUrl} = profileData
+  const {
+    mainTitle = 'Default Title',
+    subTitle = 'Default Subtitle',
+    contents = 'Default Contents',
+    skills = [],
+    tools = [],
+    imageUrl = '',
+  } = profileData
 
   return (
     <Layout isMainView>
@@ -61,6 +68,14 @@ const Page = ({profileData}: Props) => {
 }
 
 const MainPage = ({profileData}: Props) => {
+  if (!profileData) {
+    return (
+      <div className="text-center text-red-500">
+        Error: Profile data is unavailable. Please try again later.
+      </div>
+    )
+  }
+
   return <Page profileData={profileData} />
 }
 
