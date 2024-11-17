@@ -56,7 +56,7 @@ export async function getPostsByRange(from: number, to: number) {
 
     const data = await response.json()
 
-    return data
+    return data || []
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Error fetching posts data:', error)

@@ -63,6 +63,10 @@ const BlogPage = ({initialData}: BlogPageProps) => {
     }
   }, [loadMoreBlogs, hasMore])
 
+  if (initialData.length === 0) {
+    return <div className="text-center text-gray-500">No posts available.</div>
+  }
+
   return (
     <Layout>
       <div className="grid grid-cols-1 gap-y-6 md:grid-cols-2 md:gap-x-8">
