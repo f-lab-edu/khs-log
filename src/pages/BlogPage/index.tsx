@@ -10,10 +10,10 @@ import Layout from '@/widgets/Layout/components'
 const LOAD_MORE_COUNT = 2 // 추가로 불러올 데이터 수
 
 interface BlogPageProps {
-  initialData: BlogData[]
+  initialData?: BlogData[]
 }
 
-const BlogPage = ({initialData}: BlogPageProps) => {
+const BlogPage = ({initialData = []}: BlogPageProps) => {
   // State
   const [blogsData, setBlogsData] = useState<BlogData[]>(initialData)
   const [hasMore, setHasMore] = useState(true)
@@ -60,6 +60,14 @@ const BlogPage = ({initialData}: BlogPageProps) => {
       }
     }
   }, [loadMoreBlogs, hasMore])
+
+  if (blogsData.length === 0) {
+    return (
+      <div className="text-center text-gray-500">
+        No posts available. Please try again later.
+      </div>
+    )
+  }
 
   return (
     <Layout>
