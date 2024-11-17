@@ -61,10 +61,6 @@ const Page = ({profileData}: Props) => {
 }
 
 const MainPage = ({profileData}: Props) => {
-  if (!profileData) {
-    return <></>
-  }
-
   return <Page profileData={profileData} />
 }
 

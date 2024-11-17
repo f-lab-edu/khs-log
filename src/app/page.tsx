@@ -24,6 +24,10 @@ export default async function Home() {
 
     const data = await response.json()
 
+    if (!data || !data.length) {
+      throw new Error('Profile data is empty or invalid')
+    }
+
     return <MainPage profileData={data[0]} />
   } catch (error) {
     // eslint-disable-next-line no-console
