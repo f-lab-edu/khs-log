@@ -1,9 +1,8 @@
 'use client'
 
-import {useState, useRef} from 'react'
+import React, {useCallback, useEffect, useState, useRef} from 'react'
 
 import {deleteBlog} from '@/app/api/deleteBlog'
-import {getAllPosts} from '@/app/api/getPosts'
 import BlogEditModal, {
   type BlogEditModalRef,
 } from '@/features/blog/components/BlogEditModal'
@@ -11,92 +10,83 @@ import BlogList from '@/features/blog/components/BlogList'
 import EditProfileModal, {
   type EditProfileModalRef,
 } from '@/features/profile/components/EditProfileModal'
+import BlogDashBoardPageSkeleton from '@/pages/BlogDashBoardPage/ui/BlogDashBoardPageSkeleton'
 import Button from '@/shared/components/Button'
 import Dialog from '@/shared/components/Dialog'
 import Icon from '@/shared/components/Icon'
 import IconButton from '@/shared/components/IconButton'
 import Typography from '@/shared/components/Typography'
+import {SUPABASE_ANON_KEY, SUPABASE_URL} from '@/shared/constants'
 import {type BlogData} from '@/shared/types'
 import {useUser} from '@/store/user'
 import Layout from '@/widgets/Layout/components'
 
+export const runtime = 'experimental-edge'
+
 interface Props {
-  data: BlogData[]
+  blogsData: BlogData[]
+  isLoading: boolean
+  blogId: string | null
+  onChangeBlogId: (id: string | null) => void
+  onDeleteBlog: (blogId: string) => void
+  refetchBlogs: () => void
 }
 
-const BlogDashBoardPage = ({data}: Props) => {
-  const user = useUser(state => state.user)
-
-  // State
-  const [blogsData, setBlogsData] = useState<BlogData[]>(data)
-  const [selectedBlog, setSelectedBlog] = useState<BlogData | null>(null)
-  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null)
-
-  // Refs for Modals
+const Page = ({
+  blogsData,
+  isLoading,
+  blogId,
+  onChangeBlogId,
+  onDeleteBlog,
+  refetchBlogs,
+}: Props) => {
   const editProfileModalRef = useRef<EditProfileModalRef>(null)
   const blogEditModalRef = useRef<BlogEditModalRef>(null)
 
-  // Handlers
-  const handleEditProfile = () => editProfileModalRef.current?.openModal()
+  const [selectedBlog, setSelectedBlog] = useState<BlogData | null>(null)
 
-  const handleEditBlog = (blog: BlogData) => {
+  const handleEditProfile = () => {
+    editProfileModalRef.current?.openModal()
+  }
+
+  const handleBlogDetail = (blog: BlogData) => {
     setSelectedBlog(blog)
     blogEditModalRef.current?.openModal()
-  }
-
-  const handleDeleteBlog = async (blogId: string) => {
-    if (!user) return
-
-    try {
-      await deleteBlog({userId: user.id, blogId, role: user.role})
-      setBlogsData(prev => prev.filter(blog => blog.id !== blogId))
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to delete blog:', error)
-    }
-  }
-
-  const confirmDelete = () => {
-    if (deleteTargetId) {
-      handleDeleteBlog(deleteTargetId)
-      setDeleteTargetId(null)
-    }
-  }
-
-  const refetchBlogs = async () => {
-    try {
-      const updatedData = await getAllPosts()
-      if (updatedData) setBlogsData(updatedData)
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to fetch blogs data:', error)
-    }
   }
 
   return (
     <div>
       <Layout>
-        {/* Header Button */}
-        <Button onClick={handleEditProfile} className="group w-1/2 h-15 m-3">
-          <Icon iconName="blog" fill="fill-accent-3" />
-          <Typography text="홈 추가/수정" className="base2" />
+        <Button
+          onClick={handleEditProfile}
+          className="group w-1/2 h-15 flex justify-center items-center m-3 p-3.5 border border-n-3 rounded-xl h6 transition-all hover:border-transparent hover:shadow-[0_0_1rem_0.25rem_rgba(0,0,0,0.04),0px_2rem_1.5rem_-1rem_rgba(0,0,0,0.12)] last:mb-0 2xl:p-2.5 lg:p-3.5">
+          <div>
+            <Icon iconName="blog" fill="fill-accent-3" />
+            <Typography text="홈 추가/수정" className="base2" />
+          </div>
         </Button>
-
-        {/* Blog List */}
-        {blogsData.length > 0 ? (
-          blogsData.map((blog, index) => (
-            <div
-              key={`${index}-${blog.id}`}
-              className="flex justify-between items-center">
+        {isLoading ? (
+          Array.from({length: 5}).map((_, index) => (
+            <BlogDashBoardPageSkeleton key={`${index}`} />
+          ))
+        ) : blogsData.length > 0 ? (
+          blogsData.map(data => (
+            <div key={data.id} className="flex justify-between items-center">
               <BlogList
-                onClick={() => handleEditBlog(blog)}
-                title={blog.title}
+                onClick={() => handleBlogDetail(data)}
+                title={data.title}
                 isAdmin
               />
               <IconButton
-                buttonClassName="ml-4 fill-accent-1"
+                buttonClassName="ml-4 fill-accent-1 transition-colors items-center bg-transparent"
                 iconName="delete"
-                onClick={() => setDeleteTargetId(blog.id)}
+                onClick={() => onChangeBlogId(data.id)}
+              />
+              <Dialog
+                isVisible={blogId === data.id}
+                message="삭제하시겠습니까?"
+                onConfirm={() => onDeleteBlog(data.id)}
+                onCancel={() => onChangeBlogId(null)}
               />
             </div>
           ))
@@ -104,20 +94,92 @@ const BlogDashBoardPage = ({data}: Props) => {
           <Typography text="No blogs found." />
         )}
       </Layout>
-      {/* Modals */}
       <EditProfileModal ref={editProfileModalRef} />
       <BlogEditModal
         ref={blogEditModalRef}
-        blogData={selectedBlog || undefined}
+        blogData={selectedBlog ?? undefined}
         refetchBlogs={refetchBlogs}
       />
-      <Dialog
-        isVisible={!!deleteTargetId}
-        message="삭제하시겠습니까?"
-        onConfirm={confirmDelete}
-        onCancel={() => setDeleteTargetId(null)}
-      />
     </div>
+  )
+}
+
+const BlogDashBoardPage = () => {
+  const user = useUser(state => state.user)
+
+  const [blogsData, setBlogsData] = useState<BlogData[]>([]) // Use proper type for blogs data
+  const [isLoading, setIsLoading] = useState(true) // 로딩 상태 추가
+  const [blogId, setBlogId] = useState<string | null>(null)
+
+  const handleChangeBlogId = (id: string | null) => {
+    if (blogId) {
+      setBlogId(null)
+      return
+    }
+    setBlogId(id)
+  }
+
+  const fetchBlogsData = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+        throw new Error(
+          'Supabase URL or ANON KEY is missing in environment variables.',
+        )
+      }
+
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/posts`, {
+        method: 'GET',
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        cache: 'no-cache',
+      })
+
+      const data = await response.json()
+
+      setBlogsData(data) // 데이터를 설정
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to fetch blogs data:', error)
+    } finally {
+      setIsLoading(false) // 로딩 해제
+    }
+  }, [])
+
+  const handleDeleteBlog = useCallback(
+    async (blogId: string) => {
+      if (!user) return
+
+      try {
+        await deleteBlog({userId: user.id, blogId, role: user.role})
+        setBlogsData(prevData => prevData.filter(blog => blog.id !== blogId))
+        setBlogId(null)
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to delete blog:', error)
+      }
+    },
+    [user],
+  )
+
+  useEffect(() => {
+    fetchBlogsData()
+  }, [fetchBlogsData])
+
+  return (
+    <>
+      <Page
+        blogsData={blogsData}
+        isLoading={isLoading}
+        blogId={blogId}
+        onChangeBlogId={handleChangeBlogId}
+        onDeleteBlog={handleDeleteBlog}
+        refetchBlogs={fetchBlogsData}
+      />
+    </>
   )
 }
 
