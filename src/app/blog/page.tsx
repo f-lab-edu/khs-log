@@ -7,7 +7,7 @@ export default async function Blog() {
   try {
     const data = await getPostsByRange(0, INITIAL_MAXIMUM_INDEX)
 
-    if (!data || !data.length) {
+    if (!data || data.length === 0) {
       throw new Error('Posts data is empty or invalid')
     }
 
