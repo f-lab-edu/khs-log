@@ -2,6 +2,7 @@
 
 import React, {useCallback, useEffect, useState, useRef} from 'react'
 
+import {deleteBlog} from '@/app/api/deleteBlog'
 import BlogEditModal, {
   type BlogEditModalRef,
 } from '@/features/blog/components/BlogEditModal'
@@ -139,16 +140,7 @@ const BlogDashBoardPage = () => {
       if (!user) return
 
       try {
-        const response = await fetch('/api/blogDashBoard', {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({id: blogId}),
-        })
-        if (!response.ok) {
-          throw new Error('Failed to delete blog')
-        }
+        await deleteBlog({userId: user.id, blogId, role: user.role})
         setBlogsData(prevData => prevData.filter(blog => blog.id !== blogId))
         setBlogId(null)
       } catch (error) {
