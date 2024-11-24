@@ -22,7 +22,7 @@ export async function getBlogsFavorites({userId}: {userId: string}) {
 
 export async function getBlogFavorite({blogId}: {blogId: string}) {
   const supabase = createBrowserClient()
-
+  console.log('')
   try {
     const {data, error} = await supabase
       .from('favorites')
