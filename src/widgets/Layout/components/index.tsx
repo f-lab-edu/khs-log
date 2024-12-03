@@ -1,4 +1,3 @@
-import axios from 'axios'
 import {useParams, usePathname} from 'next/navigation'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 
@@ -32,7 +31,6 @@ const Layout = ({children, isMainView = false}: Props) => {
 
   const hasValidPathname = pathname !== null && pathname.includes('blog')
   const hasValidParams = params !== null && params.id !== undefined
-
   const isBlogDetailPage = hasValidPathname && hasValidParams
 
   // throttle을 통한 리사이즈 이벤트 최적화
@@ -41,12 +39,14 @@ const Layout = ({children, isMainView = false}: Props) => {
     setIsRightSideBarVisible(window.innerWidth > COMMENT_BAR_BREAKPOINT)
   }, 200)
 
-  // 댓글 데이터 불러오기 (블로그 상세 페이지)
+  // 댓글 데이터 불러오기
   const fetchBlogCommentData = useCallback(async () => {
     try {
-      const res = await axios(`/api/blogDetail?id=${params?.id}`)
+      const response = await fetch(`/api/blogDetail?id=${params?.id}`)
+      if (!response.ok) throw new Error('Failed to fetch blog comments')
 
-      setBlogCommentData(res.data.comments)
+      const result = await response.json()
+      setBlogCommentData(result.comments)
     } catch (error) {
       setBlogCommentData([])
       // eslint-disable-next-line no-console
@@ -54,19 +54,20 @@ const Layout = ({children, isMainView = false}: Props) => {
     }
   }, [params])
 
-  // 댓글 데이터 불러오기 (블로그 목록)
   const fetchCommentsData = useCallback(async () => {
     try {
-      const res = await axios(`/api/blog`)
-      setCommentsData(res.data.comments) // 로드 성공 시 데이터 설정
+      const response = await fetch(`/api/blog`)
+      if (!response.ok) throw new Error('Failed to fetch comments')
+
+      const result = await response.json()
+      setCommentsData(result.comments)
     } catch (error) {
-      setCommentsData([]) // 로드 실패 시 빈 배열 설정
+      setCommentsData([])
       // eslint-disable-next-line no-console
       console.error('Error fetching comments:', error)
     }
   }, [])
 
-  // 댓글 생성
   const handleCreateComment = useCallback(
     async ({
       username,
@@ -87,15 +88,13 @@ const Layout = ({children, isMainView = false}: Props) => {
         })
 
         if (newComment) {
-          if (isBlogDetailPage) {
-            setBlogCommentData(prevData =>
-              prevData ? [newComment, ...prevData] : [newComment],
-            )
-          } else {
-            setCommentsData(prevData =>
-              prevData ? [newComment, ...prevData] : [newComment],
-            )
-          }
+          isBlogDetailPage
+            ? setBlogCommentData(prevData =>
+                prevData ? [newComment, ...prevData] : [newComment],
+              )
+            : setCommentsData(prevData =>
+                prevData ? [newComment, ...prevData] : [newComment],
+              )
         }
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -105,7 +104,6 @@ const Layout = ({children, isMainView = false}: Props) => {
     [isBlogDetailPage, params, user?.role],
   )
 
-  // 댓글 삭제
   const handleDeleteComment = useCallback(
     async ({
       userId,
@@ -119,19 +117,15 @@ const Layout = ({children, isMainView = false}: Props) => {
       try {
         await deleteComment({userId, commentId, role})
 
-        if (isBlogDetailPage) {
-          setBlogCommentData(prevData =>
-            prevData
-              ? prevData.filter(comment => comment.id !== commentId)
-              : prevData,
-          )
-        } else {
-          setCommentsData(prevData =>
-            prevData
-              ? prevData.filter(comment => comment.id !== commentId)
-              : prevData,
-          )
-        }
+        isBlogDetailPage
+          ? setBlogCommentData(
+              prevData =>
+                prevData?.filter(comment => comment.id !== commentId) ?? null,
+            )
+          : setCommentsData(
+              prevData =>
+                prevData?.filter(comment => comment.id !== commentId) ?? null,
+            )
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Error deleting comment:', error)
@@ -140,20 +134,50 @@ const Layout = ({children, isMainView = false}: Props) => {
     [isBlogDetailPage],
   )
 
-  // 리사이즈 이벤트 추가 및 초기화
+  const renderRightSideBar = useCallback(() => {
+    if (isMainView) return null
+
+    if (isRightSideBarVisible) {
+      return (
+        <RightSideBar
+          data={isBlogDetailPage ? blogCommentData : commentsData}
+          user={user}
+          className={`${
+            !isLeftSideMiniBarVisible &&
+            'md:translate-x-64 md:before:absolute md:before:z-30 md:before:inset-0'
+          }`}
+          createComment={handleCreateComment}
+          deleteComment={handleDeleteComment}
+          isBlogDetailPage={isBlogDetailPage}
+        />
+      )
+    }
+
+    return null
+  }, [
+    isMainView,
+    isRightSideBarVisible,
+    isBlogDetailPage,
+    blogCommentData,
+    commentsData,
+    user,
+    isLeftSideMiniBarVisible,
+    handleCreateComment,
+    handleDeleteComment,
+  ])
+
   useEffect(() => {
     handleResize()
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [handleResize])
 
-  // 댓글 데이터 불러오기
   useEffect(() => {
     if (isBlogDetailPage) {
       fetchBlogCommentData()
-    } else {
-      fetchCommentsData()
+      return
     }
+    fetchCommentsData()
   }, [fetchBlogCommentData, fetchCommentsData, isBlogDetailPage])
 
   return (
@@ -179,20 +203,7 @@ const Layout = ({children, isMainView = false}: Props) => {
                 {children}
               </div>
             </div>
-            {isMainView ||
-              (isRightSideBarVisible && (
-                <RightSideBar
-                  data={isBlogDetailPage ? blogCommentData : commentsData}
-                  user={user}
-                  className={`${
-                    !isLeftSideMiniBarVisible &&
-                    'md:translate-x-64 md:before:absolute md:before:z-30 md:before:inset-0'
-                  }`}
-                  createComment={handleCreateComment}
-                  deleteComment={handleDeleteComment}
-                  isBlogDetailPage={isBlogDetailPage}
-                />
-              ))}
+            {renderRightSideBar()}
           </div>
         </div>
       </div>
